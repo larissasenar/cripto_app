@@ -180,5 +180,6 @@ def faq():
     return render_template('faq.html', faq_perguntas=faq_perguntas)
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run()
+
