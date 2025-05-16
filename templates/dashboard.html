@@ -1,0 +1,56 @@
+
+<h2>Bem-vindo ao Painel</h2>
+<a href="/logout">Sair</a>
+
+<h3>Investir em Criptomoeda</h3>
+<form method="post">
+  Cripto: <input type="text" name="cripto" placeholder="ex: bitcoin">
+  Valor: <input type="number" name="valor" step="0.01">
+  <input type="submit" name="investir" value="Investir">
+</form>
+
+<h3>Conversor de Cripto</h3>
+<form method="post">
+  De: <input type="text" name="de" placeholder="ex: bitcoin">
+  Para: <input type="text" name="para" placeholder="ex: ethereum">
+  <input type="submit" name="converter" value="Converter">
+</form>
+{% if resultado %}<p>Resultado da conversão: {{ resultado }}</p>{% endif %}
+
+<h3>Cotação Atual: {{ preco }}</h3>
+
+<h3>Histórico de Investimentos</h3>
+<ul>
+{% for item in investimentos %}
+  <li>{{ item.cripto }} | ${{ item.valor }} | Preço: ${{ item.preco }} | Data: {{ item.data }}</li>
+{% endfor %}
+</ul>
+
+<h3>Ganhos/Perdas</h3>
+<ul>
+{% for g in ganhos %}
+  <li>{{ g.cripto }}: {{ g.ganho }}</li>
+{% endfor %}
+</ul>
+
+<h3>Gráfico de Preço (7 dias)</h3>
+<canvas id="grafico" width="400" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const dados = {{ historico|safe }};
+const labels = dados.map(x => new Date(x[0]).toLocaleDateString());
+const valores = dados.map(x => x[1]);
+const ctx = document.getElementById('grafico').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '{{ cripto }}',
+      data: valores,
+      borderColor: 'blue',
+      borderWidth: 2
+    }]
+  }
+});
+</script>
