@@ -3,12 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <title>Cadastro - Sistema Cripto</title>
-    <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
-  <body>
-    <div class="container">
+  <body class="layout-auth">
+    <div class="auth-box">
       <h2>Cadastro</h2>
+
+      {% if erro %}
+      <p class="erro">{{ erro }}</p>
+      {% endif %} {% if sucesso %}
+      <p class="success-message">{{ sucesso }}</p>
+      {% endif %}
+
       <form method="post">
+        <label for="nome">Nome:</label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          placeholder="Digite seu nome"
+          required
+        />
+
         <label for="email">Email:</label>
         <input
           type="text"
@@ -27,14 +46,21 @@
           required
         />
 
+        <label for="confirmar_senha">Confirmar senha:</label>
+        <input
+          type="password"
+          id="confirmar_senha"
+          name="confirmar_senha"
+          placeholder="Confirme sua senha"
+          required
+        />
+
         <input type="submit" value="Cadastrar" />
       </form>
 
-      <p>Já tem conta? <a href="/login">Entrar</a></p>
-
-      {% if erro %}
-      <p class="erro">{{ erro }}</p>
-      {% endif %}
+      <p style="text-align: center">
+        Já tem conta? <a href="{{ url_for('login') }}">Entrar</a>
+      </p>
     </div>
   </body>
 </html>

@@ -3,11 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <title>Login - Sistema Cripto</title>
-    <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
-  <body>
-    <div class="container">
+  <body class="layout-auth">
+    <div class="auth-box">
       <h2>Login</h2>
+
+      {% if erro %}
+      <p class="erro">{{ erro }}</p>
+      {% endif %}
+
       <form method="post">
         <label for="email">Email:</label>
         <input
@@ -30,11 +38,9 @@
         <input type="submit" value="Entrar" />
       </form>
 
-      <p>Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
-
-      {% if erro %}
-      <p class="erro">{{ erro }}</p>
-      {% endif %}
+      <p style="text-align: center">
+        Não tem conta? <a href="{{ url_for('cadastro') }}">Cadastre-se</a>
+      </p>
     </div>
   </body>
 </html>

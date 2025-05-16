@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FAQ - Perguntas Frequentes</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="faq">
+      <h1>Perguntas Frequentes (FAQ)</h1>
+
+      {% for item in faq_perguntas %}
+      <h3 class="pergunta">
+        {{ item.pergunta }}
+        <span class="seta">&#9656;</span>
+      </h3>
+      <div class="resposta" style="display: none">
+        <p>{{ item.resposta }}</p>
+      </div>
+      {% endfor %}
+
+      <button
+        class="btn-voltar"
+        onclick="window.location.href='{{ url_for('dashboard') }}'"
+      >
+        Voltar ao Dashboard
+      </button>
+    </div>
+
+    <script>
+      document.querySelectorAll(".faq .pergunta").forEach((el) => {
+        el.addEventListener("click", () => {
+          el.classList.toggle("aberta");
+          const resposta = el.nextElementSibling;
+          if (resposta.style.display === "block") {
+            resposta.style.display = "none";
+          } else {
+            resposta.style.display = "block";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

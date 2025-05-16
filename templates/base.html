@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Minha Aplicação{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f5f6fa;
+      }
+      nav {
+        background-color: #2c3e50;
+        padding: 10px 20px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        z-index: 999;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      nav a {
+        color: white;
+        margin-right: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1rem;
+      }
+      nav a:hover {
+        color: #1abc9c;
+      }
+      main {
+        padding: 80px 20px 20px; /* Espaço para o menu fixo no topo */
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        min-height: 80vh;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        border-radius: 6px;
+      }
+      footer {
+        text-align: center;
+        margin: 20px 0;
+        color: #aaa;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('faq') }}">FAQ</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+    <main>{% block content %}{% endblock %}</main>
+    <footer>&copy; 2025 Meu App de Investimento em Criptomoedas</footer>
+  </body>
+</html>

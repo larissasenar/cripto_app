@@ -2,107 +2,150 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>Dashboard - Sistema Cripto</title>
-    <link rel="stylesheet" href="/static/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Dashboard - Cripto Invest App</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <div class="sidebar">
-      <h2>Cripto</h2>
-      <ul>
-        <li><a href="#cotacao">Cotação</a></li>
-        <li><a href="#investir">Investir</a></li>
-        <li><a href="#converter">Conversor</a></li>
-        <li><a href="#historico">Histórico</a></li>
-        <li><a href="/logout">Sair</a></li>
-      </ul>
-    </div>
+    <!-- Botão Hamburger para mobile -->
+    <button
+      class="hamburger"
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="sidebar"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="main">
-      <h2>Bem-vindo ao Painel</h2>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar" aria-label="Menu principal">
+  <h2><i class="fas fa-coins"></i> Cripto Invest</h2>
+  <ul>
+    <li><a href="#cotacao"><i class="fas fa-coins"></i> Cotação Atual</a></li>
+    <li><a href="#grafico"><i class="fas fa-chart-line"></i> Gráfico</a></li>
+    <li><a href="#conversor"><i class="fas fa-exchange-alt"></i> Conversor</a></li>
+    <li><a href="#historico"><i class="fas fa-history"></i> Histórico</a></li>
+    <li><a href="/faq"><i class="fas fa-question-circle"></i> FAQ</a></li>  <!-- Aqui -->
+    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+  </ul>
+</nav>
 
-      <section id="cotacao">
-        <h3>Cotação Atual</h3>
-        <p>{{ cripto }}: <strong>${{ preco }}</strong></p>
+    <main class="main">
+      <div class="card">
+        <h2>
+          <i class="fas fa-user-circle"></i> Bem-vindo, {{ nome_usuario or 'Usuário' }}
+        </h2>
+        {% set partes = data_hora.split(' ') if data_hora else ['', ''] %}
+        <p>
+          <i class="fas fa-calendar-day"></i> {{ partes[0] }} |
+          <i class="fas fa-clock"></i> {{ partes[1] }}
+        </p>
+      </div>
+
+      <section id="cotacao" class="card">
+        <h3><i class="fas fa-coins"></i> Cotação Atual</h3>
+        <p>Moeda: {{ cripto or 'bitcoin' }}</p>
+        <p>Preço atual: R$ {{ '%.2f'|format(preco or 0) }}</p>
       </section>
 
-      <section id="investir">
-        <h3>Investir em Criptomoeda</h3>
-        <form method="post">
-          <input type="text" name="cripto" placeholder="ex: bitcoin" required />
-          <input
-            type="number"
-            name="valor"
-            step="0.01"
-            placeholder="Valor em USD"
-            required
-          />
-          <input type="submit" name="investir" value="Investir" />
+      <section id="grafico" class="card">
+        <h3><i class="fas fa-chart-line"></i> Gráfico de Preço</h3>
+
+        <!-- Formulário para seleção de criptomoeda -->
+        <form method="post" style="margin-bottom: 1rem;">
+          <input type="hidden" name="buscar" value="1" />
+          <label for="cripto">Selecionar Criptomoeda:</label>
+          <select name="cripto" id="cripto" onchange="this.form.submit()">
+            <option value="bitcoin" {% if cripto == 'bitcoin' %}selected{% endif %}>Bitcoin</option>
+            <option value="ethereum" {% if cripto == 'ethereum' %}selected{% endif %}>Ethereum</option>
+            <option value="litecoin" {% if cripto == 'litecoin' %}selected{% endif %}>Litecoin</option>
+            <option value="dogecoin" {% if cripto == 'dogecoin' %}selected{% endif %}>Dogecoin</option>
+          </select>
         </form>
+
+        <!-- Gráfico -->
+        <canvas id="grafico-canvas"></canvas>
       </section>
 
-      <section id="converter">
-        <h3>Conversor de Criptomoedas</h3>
+      <section id="conversor" class="card">
+        <h3><i class="fas fa-exchange-alt"></i> Conversor</h3>
         <form method="post">
-          <input
-            type="text"
-            name="de"
-            placeholder="De (ex: bitcoin)"
-            required
-          />
-          <input
-            type="text"
-            name="para"
-            placeholder="Para (ex: ethereum)"
-            required
-          />
+          <label for="de">De:</label>
+          <input type="text" name="de" id="de" required />
+          <label for="para">Para:</label>
+          <input type="text" name="para" id="para" required />
           <input type="submit" name="converter" value="Converter" />
         </form>
         {% if resultado %}
-        <p><strong>Resultado:</strong> {{ resultado }}</p>
+        <p>Resultado: {{ resultado }}</p>
         {% endif %}
       </section>
 
-      <section id="historico">
-        <h3>Histórico de Investimentos</h3>
+      <section id="historico" class="card">
+        <h3><i class="fas fa-history"></i> Histórico de Investimentos</h3>
+        {% if investimentos and investimentos|length > 0 %}
         <ul>
           {% for item in investimentos %}
           <li>
-            {{ item.cripto }} | ${{ item.valor }} | Preço: ${{ item.preco }} |
-            Data: {{ item.data }}
+            {{ item.data or 'Data desconhecida' }} - {{ item.cripto }} - Valor:
+            R$ {{ '%.2f'|format(item.valor or 0) }} - Preço Compra: R$ {{ '%.2f'|format(item.preco or 0) }}
           </li>
           {% endfor %}
         </ul>
-
-        <h3>Ganhos/Perdas</h3>
-        <ul>
-          {% for g in ganhos %}
-          <li>{{ g.cripto }}: {{ g.ganho }}</li>
-          {% endfor %}
-        </ul>
-
-        <h3>Gráfico de Preço (7 dias)</h3>
-        <canvas id="grafico" width="400" height="200"></canvas>
+        {% else %}
+        <p>Você ainda não possui investimentos registrados.</p>
+        {% endif %}
       </section>
-    </div>
+    </main>
 
+    <!-- Script Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-      const dados = {{ historico|safe }};
-      const labels = dados.map(x => new Date(x[0]).toLocaleDateString());
-      const valores = dados.map(x => x[1]);
-      const ctx = document.getElementById('grafico').getContext('2d');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: '{{ cripto }}',
-            data: valores,
-            borderColor: '#00c896',
-            backgroundColor: 'rgba(0, 200, 150, 0.2)',
-            borderWidth: 2
-          }]
-        }
+      const ctx = document.getElementById('grafico-canvas');
+      if (ctx) {
+        const labels = {{ historico|default([])|map(attribute='data')|list|tojson }};
+        const data = {{ historico|default([])|map(attribute='preco')|list|tojson }};
+
+        console.log("Gráfico - Labels:", labels);
+        console.log("Gráfico - Dados:", data);
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Preço (R$)',
+                data: data,
+                borderColor: '#00c896',
+                backgroundColor: 'rgba(0, 200, 150, 0.1)',
+                tension: 0.2,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: false },
+            },
+          },
+        });
+      }
+
+      const hamburger = document.querySelector('.hamburger');
+      const sidebar = document.getElementById('sidebar');
+
+      hamburger.addEventListener('click', () => {
+        const expanded = hamburger.getAttribute('aria-expanded') === 'true' || false;
+        hamburger.setAttribute('aria-expanded', !expanded);
+        sidebar.classList.toggle('active');
       });
     </script>
   </body>
