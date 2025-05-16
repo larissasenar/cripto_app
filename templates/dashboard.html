@@ -1,56 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard - Sistema Cripto</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>Cripto</h2>
+      <ul>
+        <li><a href="#cotacao">Cotação</a></li>
+        <li><a href="#investir">Investir</a></li>
+        <li><a href="#converter">Conversor</a></li>
+        <li><a href="#historico">Histórico</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
 
-<h2>Bem-vindo ao Painel</h2>
-<a href="/logout">Sair</a>
+    <div class="main">
+      <h2>Bem-vindo ao Painel</h2>
 
-<h3>Investir em Criptomoeda</h3>
-<form method="post">
-  Cripto: <input type="text" name="cripto" placeholder="ex: bitcoin">
-  Valor: <input type="number" name="valor" step="0.01">
-  <input type="submit" name="investir" value="Investir">
-</form>
+      <section id="cotacao">
+        <h3>Cotação Atual</h3>
+        <p>{{ cripto }}: <strong>${{ preco }}</strong></p>
+      </section>
 
-<h3>Conversor de Cripto</h3>
-<form method="post">
-  De: <input type="text" name="de" placeholder="ex: bitcoin">
-  Para: <input type="text" name="para" placeholder="ex: ethereum">
-  <input type="submit" name="converter" value="Converter">
-</form>
-{% if resultado %}<p>Resultado da conversão: {{ resultado }}</p>{% endif %}
+      <section id="investir">
+        <h3>Investir em Criptomoeda</h3>
+        <form method="post">
+          <input type="text" name="cripto" placeholder="ex: bitcoin" required />
+          <input
+            type="number"
+            name="valor"
+            step="0.01"
+            placeholder="Valor em USD"
+            required
+          />
+          <input type="submit" name="investir" value="Investir" />
+        </form>
+      </section>
 
-<h3>Cotação Atual: {{ preco }}</h3>
+      <section id="converter">
+        <h3>Conversor de Criptomoedas</h3>
+        <form method="post">
+          <input
+            type="text"
+            name="de"
+            placeholder="De (ex: bitcoin)"
+            required
+          />
+          <input
+            type="text"
+            name="para"
+            placeholder="Para (ex: ethereum)"
+            required
+          />
+          <input type="submit" name="converter" value="Converter" />
+        </form>
+        {% if resultado %}
+        <p><strong>Resultado:</strong> {{ resultado }}</p>
+        {% endif %}
+      </section>
 
-<h3>Histórico de Investimentos</h3>
-<ul>
-{% for item in investimentos %}
-  <li>{{ item.cripto }} | ${{ item.valor }} | Preço: ${{ item.preco }} | Data: {{ item.data }}</li>
-{% endfor %}
-</ul>
+      <section id="historico">
+        <h3>Histórico de Investimentos</h3>
+        <ul>
+          {% for item in investimentos %}
+          <li>
+            {{ item.cripto }} | ${{ item.valor }} | Preço: ${{ item.preco }} |
+            Data: {{ item.data }}
+          </li>
+          {% endfor %}
+        </ul>
 
-<h3>Ganhos/Perdas</h3>
-<ul>
-{% for g in ganhos %}
-  <li>{{ g.cripto }}: {{ g.ganho }}</li>
-{% endfor %}
-</ul>
+        <h3>Ganhos/Perdas</h3>
+        <ul>
+          {% for g in ganhos %}
+          <li>{{ g.cripto }}: {{ g.ganho }}</li>
+          {% endfor %}
+        </ul>
 
-<h3>Gráfico de Preço (7 dias)</h3>
-<canvas id="grafico" width="400" height="200"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const dados = {{ historico|safe }};
-const labels = dados.map(x => new Date(x[0]).toLocaleDateString());
-const valores = dados.map(x => x[1]);
-const ctx = document.getElementById('grafico').getContext('2d');
-new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: '{{ cripto }}',
-      data: valores,
-      borderColor: 'blue',
-      borderWidth: 2
-    }]
-  }
-});
-</script>
+        <h3>Gráfico de Preço (7 dias)</h3>
+        <canvas id="grafico" width="400" height="200"></canvas>
+      </section>
+    </div>
+
+    <script>
+      const dados = {{ historico|safe }};
+      const labels = dados.map(x => new Date(x[0]).toLocaleDateString());
+      const valores = dados.map(x => x[1]);
+      const ctx = document.getElementById('grafico').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '{{ cripto }}',
+            data: valores,
+            borderColor: '#00c896',
+            backgroundColor: 'rgba(0, 200, 150, 0.2)',
+            borderWidth: 2
+          }]
+        }
+      });
+    </script>
+  </body>
+</html>

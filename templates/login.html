@@ -1,9 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - Sistema Cripto</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Login</h2>
+      <form method="post">
+        <label for="email">Email:</label>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          placeholder="Digite seu e-mail"
+          required
+        />
 
-<h2>Login</h2>
-<form method="post">
-  Email: <input type="text" name="email"><br>
-  Senha: <input type="password" name="senha"><br>
-  <input type="submit" value="Entrar">
-</form>
-<p>Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
-{% if erro %}<p style="color:red">{{ erro }}</p>{% endif %}
+        <label for="senha">Senha:</label>
+        <input
+          type="password"
+          id="senha"
+          name="senha"
+          placeholder="Digite sua senha"
+          required
+        />
+
+        <input type="submit" value="Entrar" />
+      </form>
+
+      <p>Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+
+      {% if erro %}
+      <p class="erro">{{ erro }}</p>
+      {% endif %}
+    </div>
+  </body>
+</html>
