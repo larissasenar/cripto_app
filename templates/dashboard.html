@@ -2,6 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dashboard - Cripto Invest App</title>
     <link
       rel="stylesheet"
@@ -42,10 +43,9 @@
         <h2>
           <i class="fas fa-user-circle"></i> Bem-vindo, {{ nome_usuario or 'Usuário' }}
         </h2>
-        {% set partes = data_hora.split(' ') if data_hora else ['', ''] %}
-        <p>
-          <i class="fas fa-calendar-day"></i> {{ partes[0] }} |
-          <i class="fas fa-clock"></i> {{ partes[1] }}
+         <p>
+          <i class="fas fa-calendar-day"></i> {{ data }} |
+          <i class="fas fa-clock"></i> {{ hora }}
         </p>
       </div>
 
@@ -107,46 +107,31 @@
 
     <!-- Script Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      const ctx = document.getElementById('grafico-canvas');
-      if (ctx) {
-        const labels = {{ historico|default([])|map(attribute='data')|list|tojson }};
-        const data = {{ historico|default([])|map(attribute='preco')|list|tojson }};
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Seu código para hamburger e sidebar responsiva
+  const hamburger = document.querySelector('.hamburger');
+  const sidebar = document.getElementById('sidebar');
 
-        console.log("Gráfico - Labels:", labels);
-        console.log("Gráfico - Dados:", data);
+  hamburger.addEventListener('click', () => {
+    const expanded = hamburger.getAttribute('aria-expanded') === 'true' || false;
+    hamburger.setAttribute('aria-expanded', !expanded);
+    sidebar.classList.toggle('active');
+  });
 
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Preço (R$)',
-                data: data,
-                borderColor: '#00c896',
-                backgroundColor: 'rgba(0, 200, 150, 0.1)',
-                tension: 0.2,
-                fill: true,
-              },
-            ],
-          },
-          options: {
-            scales: {
-              y: { beginAtZero: false },
-            },
-          },
-        });
+  // Fechar sidebar ao clicar em link (mobile)
+  sidebar.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 700) {
+        sidebar.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', false);
       }
+    });
+  });
 
-      const hamburger = document.querySelector('.hamburger');
-      const sidebar = document.getElementById('sidebar');
+  // Seu código para gráfico pode ficar aqui também, ou fora
+});
+</script>
 
-      hamburger.addEventListener('click', () => {
-        const expanded = hamburger.getAttribute('aria-expanded') === 'true' || false;
-        hamburger.setAttribute('aria-expanded', !expanded);
-        sidebar.classList.toggle('active');
-      });
-    </script>
   </body>
 </html>

@@ -137,17 +137,22 @@ def dashboard():
                 'ganho': ganho
             })
 
-    agora = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    agora = datetime.now()
+    data_formatada = agora.strftime('%d/%m/%Y')
+    hora_formatada = agora.strftime('%H:%M:%S')
+
 
     return render_template('dashboard.html',
-                           investimentos=investimentos,
-                           preco=preco_atual,
-                           historico=historico,
-                           resultado=resultado_conversao,
-                           ganhos=ganhos,
-                           cripto=cripto,
-                           nome_usuario=nome_usuario,
-                           data_hora=agora)
+                       investimentos=investimentos,
+                       preco=preco_atual,
+                       historico=historico,
+                       resultado=resultado_conversao,
+                       ganhos=ganhos,
+                       cripto=cripto,
+                       nome_usuario=nome_usuario,
+                       data=data_formatada,
+                       hora=hora_formatada)
+
 
 @app.route('/faq')
 def faq():
