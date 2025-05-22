@@ -27,7 +27,7 @@ Cripto Invest App é uma aplicação web para gerenciar investimentos em criptom
 ## Como executar
 
 1. Clone este repositório:
-git clone https://github.com/seu-usuario/cripto-invest-app.git
+git clone <https://github.com/larissasenar/cripto_app.git>
 cd cripto-invest-app
 
 2. Crie um ambiente virtual e ative:
@@ -41,7 +41,6 @@ pip install -r requirements.txt
 4. Execute a aplicação:
 flask run
 
-
 5. Acesse `http://localhost:5000` no navegador.
 
 ## Estrutura de arquivos
@@ -53,7 +52,7 @@ flask run
 
 ## Contato
 
-Para dúvidas ou sugestões, abra uma issue ou entre em contato via email: larissasenar@gmail.com
+Para dúvidas ou sugestões, abra uma issue ou entre em contato via email:larissasenar@gmail.com
 
 ---
 
