@@ -181,8 +181,25 @@ def faq():
             "pergunta": "Como posso acompanhar meus investimentos?",
             "resposta": "Na dashboard, você pode ver seus investimentos atuais, o preço das criptomoedas e um gráfico com o histórico de preços."
         },
+        {
+            "pergunta": "Quais criptomoedas estão disponíveis na plataforma?",
+            "resposta": "Oferecemos as principais criptomoedas do mercado, como Bitcoin (BTC), Ethereum (ETH), Binance Coin (BNB), entre outras."
+        },
+        {
+            "pergunta": "Posso vender minhas criptomoedas através da aplicação?",
+            "resposta": "Atualmente, a aplicação foca em monitoramento e acompanhamento dos investimentos. Funcionalidades de compra e venda direta poderão ser adicionadas futuramente."
+        },
+        {
+            "pergunta": "Como são calculados os ganhos exibidos?",
+            "resposta": "Os ganhos são calculados com base na variação do preço da criptomoeda desde a compra até o momento atual, descontando eventuais taxas."
+        },
+        {
+            "pergunta": "É possível exportar meus dados de investimento?",
+            "resposta": "Sim, em breve implementaremos a funcionalidade para exportar relatórios em formato CSV ou PDF para facilitar seu controle."
+        }
     ]
     return render_template('faq.html', faq_perguntas=faq_perguntas)
+
 
 
 if __name__ == "__main__":
