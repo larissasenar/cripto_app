@@ -1,26 +1,13 @@
-/* Base para tamanho de fonte confortável em mobile e desktop */
-html {
-  font-size: 16px; /* base confortável para todos dispositivos */
-  box-sizing: border-box;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
 body {
   background-color: #0d1117;
   color: #c9d1d9;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  /* Removido display:flex para evitar encolhimento no mobile */
+  display: flex;
   min-height: 100vh;
 }
 
-/* Sidebar */
 .sidebar {
   width: 220px;
   background-color: #161b22;
@@ -31,11 +18,12 @@ body {
   top: 0;
   left: 0;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .sidebar h2 {
   margin-bottom: 30px;
-  font-size: 1.5rem; /* 24px */
+  font-size: 24px;
   text-align: center;
 }
 
@@ -53,7 +41,7 @@ body {
   color: #c9d1d9;
   text-decoration: none;
   font-weight: bold;
-  font-size: 1rem; /* 16px */
+  font-size: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -69,8 +57,8 @@ body {
   margin-left: 220px;
   padding: 30px;
   flex: 1;
-  min-height: 100vh;
   box-sizing: border-box;
+  min-height: 100vh;
 }
 
 .card h2,
@@ -78,12 +66,11 @@ body {
   color: #00c896;
   margin-bottom: 15px;
   text-align: left;
-  font-size: 1.25rem; /* 20px */
 }
 
 h1 {
   color: #58a6ff;
-  font-size: 1.75rem; /* 28px */
+  font-size: 28px;
   margin-bottom: 30px;
 }
 
@@ -106,16 +93,6 @@ form {
 
 label {
   font-weight: bold;
-  font-size: 1rem; /* 16px */
-}
-
-input[type="text"],
-input[type="password"],
-input[type="number"],
-input[type="submit"] {
-  font-size: 1rem; /* 16px */
-  box-sizing: border-box;
-  width: 100%; /* ocupa toda largura do form */
 }
 
 input[type="text"],
@@ -128,6 +105,7 @@ input[type="number"] {
   color: #c9d1d9;
   outline-offset: 2px;
   outline-color: transparent;
+  font-size: 16px;
   transition: border-color 0.3s;
 }
 
@@ -234,14 +212,14 @@ faq {
 
 .faq h1 {
   color: #00c896;
-  font-size: 2.25rem; /* 36px */
+  font-size: 36px;
   margin-bottom: 30px;
   text-align: center;
 }
 
 .faq .pergunta {
   font-weight: 700;
-  font-size: 1.25rem; /* 20px */
+  font-size: 20px;
   margin-bottom: 10px;
   cursor: pointer;
   color: #00c896;
@@ -277,7 +255,7 @@ faq {
 
 .faq .resposta {
   margin-bottom: 20px;
-  font-size: 1rem; /* 16px */
+  font-size: 16px;
   color: #c9d1d9;
   padding-left: 10px;
 }
@@ -290,7 +268,7 @@ faq {
   border: none;
   border-radius: 6px;
   font-weight: bold;
-  font-size: 1rem; /* 16px */
+  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: 40px;
@@ -303,7 +281,18 @@ faq {
   outline: none;
 }
 
-/* Mobile: esconder sidebar e mostrar hamburger */
+.layout-auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("/static/images/fundo-login.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* No mobile: esconder sidebar por padrão e mostrar botão hamburger */
 @media (max-width: 700px) {
   .hamburger {
     display: block;
@@ -311,7 +300,7 @@ faq {
   .sidebar {
     position: fixed;
     top: 0;
-    left: -260px; /* escondida fora da tela */
+    left: -260px; /* escondida para fora da tela */
     height: 100vh;
     width: 220px;
     padding: 20px;
@@ -324,7 +313,6 @@ faq {
   }
 
   .main {
-    margin-left: 0;
     padding: 20px 10px;
   }
 
@@ -334,13 +322,13 @@ faq {
   }
 
   h1 {
-    font-size: 1.375rem; /* 22px */
+    font-size: 22px;
     text-align: center;
   }
 
   .card h2,
   .card h3 {
-    font-size: 1.125rem; /* 18px */
+    font-size: 18px;
     text-align: center;
   }
 }
