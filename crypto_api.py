@@ -14,7 +14,7 @@ def get_crypto_price(cripto):
 
     try:
         url = f'https://api.coingecko.com/api/v3/simple/price?ids={cripto}&vs_currencies=usd'
-        resposta = requests.get(url)
+        resposta = requests.get(url, timeout=5)
         resposta.raise_for_status()
         dados = resposta.json()
         preco = dados.get(cripto, {}).get('usd')
@@ -32,7 +32,7 @@ def get_price_history(cripto):
 
     try:
         url = f'https://api.coingecko.com/api/v3/coins/{cripto}/market_chart?vs_currency=usd&days=7'
-        resposta = requests.get(url)
+        resposta = requests.get(url, timeout=5)
         resposta.raise_for_status()
         dados = resposta.json()
         lista_precos = []
@@ -52,7 +52,7 @@ def get_price_history(cripto):
 def converter_crypto(de, para):
     try:
         url = f'https://api.coingecko.com/api/v3/simple/price?ids={de}&vs_currencies={para}'
-        resposta = requests.get(url)
+        resposta = requests.get(url, timeout=5)
         resposta.raise_for_status()
         dados = resposta.json()
         return dados.get(de, {}).get(para)
@@ -60,14 +60,29 @@ def converter_crypto(de, para):
         print(f"Erro ao converter {de} para {para}: {e}")
         return None
 
+def obter_historico_coingecko(cripto_id='bitcoin', dias=30):
+    try:
+        url = f'https://api.coingecko.com/api/v3/coins/{cripto_id}/market_chart'
+        params = {
+            'vs_currency': 'brl',
+            'days': dias,
+            'interval': 'daily'
+        }
 
-# Exemplo de uso (pode remover na versão final)
-if __name__ == '__main__':
-    cripto = 'bitcoin'
-    preco = get_crypto_price(cripto)
-    historico = get_price_history(cripto)
-    conversao = converter_crypto('bitcoin', 'ethereum')
+        resposta = requests.get(url, params=params, timeout=5)
+        resposta.raise_for_status()
+        dados = resposta.json()
+        precos = dados['prices']  # Lista de [timestamp, preco]
 
-    print(f"Preço atual de {cripto}: {preco}")
-    print(f"Histórico de preços de {cripto}: {historico}")
-    print(f"Conversão de {cripto} para ethereum: {conversao}")
+        labels = []
+        valores = []
+
+        for timestamp, valor_preco in precos:
+            data = datetime.utcfromtimestamp(timestamp / 1000).strftime('%d/%m')
+            labels.append(data)
+            valores.append(round(valor_preco, 2))
+
+        return labels, valores
+    except Exception as e:
+        print(f"Erro ao obter histórico do CoinGecko: {e}")
+        return [], []

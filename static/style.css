@@ -1,3 +1,4 @@
+/* === Estrutura Geral === */
 body {
   background-color: #0d1117;
   color: #c9d1d9;
@@ -6,6 +7,7 @@ body {
   padding: 0;
   display: flex;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .sidebar {
@@ -19,6 +21,7 @@ body {
   left: 0;
   overflow-y: auto;
   box-sizing: border-box;
+  transition: all 0.3s ease-in-out;
 }
 
 .sidebar h2 {
@@ -53,12 +56,37 @@ body {
   outline: none;
 }
 
+.sidebar ul li a:focus-visible {
+  outline: 2px solid #00c896;
+  outline-offset: 2px;
+}
+
 .main {
   margin-left: 220px;
   padding: 30px;
   flex: 1;
   box-sizing: border-box;
   min-height: 100vh;
+}
+
+/* === Cards === */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: #161b22;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(0, 200, 150, 0.3);
 }
 
 .card h2,
@@ -68,21 +96,14 @@ body {
   text-align: left;
 }
 
+/* === Títulos === */
 h1 {
   color: #58a6ff;
   font-size: 28px;
   margin-bottom: 30px;
 }
 
-.card {
-  background-color: #161b22;
-  border-left: 5px solid #00c896;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0, 200, 150, 0.15);
-}
-
+/* === Formulários === */
 form {
   display: flex;
   flex-direction: column;
@@ -97,26 +118,28 @@ label {
 
 input[type="text"],
 input[type="password"],
-input[type="number"] {
+input[type="number"],
+select {
   padding: 10px;
   border: 1px solid #30363d;
   border-radius: 5px;
   background-color: #0d1117;
   color: #c9d1d9;
-  outline-offset: 2px;
-  outline-color: transparent;
   font-size: 16px;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus,
-input[type="number"]:focus {
+input[type="number"]:focus,
+select:focus {
   border-color: #00c896;
-  outline-color: #00c896;
+  box-shadow: 0 0 0 2px #00c89644;
 }
 
-input[type="submit"] {
+input[type="submit"],
+button[type="submit"],
+.btn-export {
   background-color: #00c896;
   color: #0d1117;
   padding: 10px;
@@ -124,15 +147,26 @@ input[type="submit"] {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 input[type="submit"]:hover,
-input[type="submit"]:focus {
+input[type="submit"]:focus,
+button[type="submit"]:hover,
+button[type="submit"]:focus,
+.btn-export:hover {
   background-color: #00a67e;
-  outline: none;
+  box-shadow: 0 0 8px #00c89655;
 }
 
+input[type="submit"]:focus-visible,
+button[type="submit"]:focus-visible,
+.btn-export:focus-visible {
+  outline: 2px solid #00c896;
+  outline-offset: 2px;
+}
+
+/* === Links e textos === */
 a {
   color: #58a6ff;
   text-decoration: none;
@@ -144,6 +178,11 @@ a:focus {
   text-decoration: underline;
   color: #79b8ff;
   outline: none;
+}
+
+a:focus-visible {
+  outline: 2px solid #00c896;
+  outline-offset: 2px;
 }
 
 .erro {
@@ -158,20 +197,91 @@ ul {
   max-width: 600px;
 }
 
-canvas {
-  margin-top: 20px;
-  background-color: #0d1117;
-  border-radius: 5px;
-  width: 100% !important;
-  max-height: 400px;
+/* === Canvas gráfico === */
+.chart-container {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  margin: 30px 0;
 }
 
+#grafico-canvas {
+  background-color: #161b22;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0, 200, 150, 0.15);
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.chart-controls label {
+  color: #00c896;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.chart-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding: 12px 15px;
+  background-color: #161b22;
+  border-radius: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chart-stats div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c9d1d9;
+  font-size: 14px;
+}
+
+.chart-stats i {
+  color: #00c896;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+.btn-export i {
+  color: #0d1117;
+}
+
+.legend,
+.chart-label,
+.chart-title {
+  color: #00c896;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+/* === Layout login === */
 .layout-auth {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #0d1117;
+  background-image: url("/static/images/fundo-login.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .auth-box {
@@ -189,35 +299,21 @@ canvas {
   margin-bottom: 20px;
 }
 
-/* Botão Hamburger - aparece só no mobile */
-.hamburger {
-  display: none;
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  background: transparent;
-  border: none;
-  color: #00c896;
-  font-size: 28px;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-faq {
+/* === FAQ === */
+.faq-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  color: #c9d1d9;
 }
 
-.faq h1 {
+.faq-container h1 {
   color: #00c896;
   font-size: 36px;
   margin-bottom: 30px;
   text-align: center;
 }
 
-.faq .pergunta {
+.faq-container .pergunta {
   font-weight: 700;
   font-size: 20px;
   margin-bottom: 10px;
@@ -232,34 +328,33 @@ faq {
   justify-content: space-between;
 }
 
-.faq .pergunta:hover {
+.faq-container .pergunta:hover {
   background-color: #002b22;
   color: #79b8ff;
 }
 
-.faq .pergunta.aberta {
+.faq-container .pergunta.aberta {
   background-color: #003933;
   color: #79b8ff;
 }
 
-.faq .seta {
-  display: inline-block;
-  margin-left: 10px;
+.faq-container .seta {
   font-size: 18px;
   transition: transform 0.3s ease;
 }
 
-.faq .pergunta.aberta .seta {
+.faq-container .pergunta.aberta .seta {
   transform: rotate(90deg);
 }
 
-.faq .resposta {
+.faq-container .resposta {
   margin-bottom: 20px;
   font-size: 16px;
   color: #c9d1d9;
   padding-left: 10px;
 }
 
+/* === Botão Voltar === */
 .btn-voltar {
   display: inline-block;
   background-color: #00c896;
@@ -270,7 +365,7 @@ faq {
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   margin-top: 40px;
   text-align: center;
 }
@@ -278,47 +373,121 @@ faq {
 .btn-voltar:hover,
 .btn-voltar:focus {
   background-color: #008a6a;
-  outline: none;
+  box-shadow: 0 0 8px #00c89655;
 }
 
-.layout-auth {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-image: url("/static/images/fundo-login.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+/* === Tabela de Investimentos === */
+.lista-investimentos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #161b22;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-/* No mobile: esconder sidebar por padrão e mostrar botão hamburger */
+.lista-investimentos th,
+.lista-investimentos td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #30363d;
+  color: #c9d1d9;
+}
+
+.lista-investimentos th {
+  background-color: #0d1117;
+  color: #00c896;
+  font-weight: bold;
+}
+
+.lista-investimentos tr:hover {
+  background-color: #21262d;
+}
+
+/* === Botão Flutuante === */
+.botao-flutuante {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #00c896;
+  color: #0d1117;
+  padding: 14px 18px;
+  border-radius: 50%;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 200, 150, 0.4);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 999;
+}
+
+.botao-flutuante:hover {
+  background-color: #00a67e;
+}
+
+.hamburger {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  z-index: 1100;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: none;
+}
+
+/* === Estilos para o tooltip do gráfico === */
+.chartjs-tooltip {
+  background: rgba(22, 27, 34, 0.95) !important;
+  border: 1px solid #00c896 !important;
+  border-radius: 5px !important;
+  padding: 10px !important;
+  color: #c9d1d9 !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.chartjs-tooltip-key {
+  background: #00c896 !important;
+}
+
+/* === Responsividade === */
 @media (max-width: 700px) {
   .hamburger {
     display: block;
   }
+
   .sidebar {
-    position: fixed;
-    top: 0;
-    left: -260px; /* escondida para fora da tela */
-    height: 100vh;
-    width: 220px;
-    padding: 20px;
-    transition: left 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
+    left: -260px;
   }
+
   .sidebar.active {
-    left: 0; /* mostra a sidebar */
+    left: 0;
   }
 
   .main {
+    margin-left: 0;
+    width: 100%;
     padding: 20px 10px;
   }
 
   .card {
+    width: 100%;
     padding: 15px;
     margin-bottom: 20px;
+  }
+
+  form {
+    max-width: 100%;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="submit"],
+  select {
+    font-size: 18px;
   }
 
   h1 {
@@ -330,5 +499,31 @@ faq {
   .card h3 {
     font-size: 18px;
     text-align: center;
+  }
+
+  .chart-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-stats {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .chart-controls select,
+  .chart-controls button {
+    width: 100%;
+  }
+
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70vw;
   }
 }
