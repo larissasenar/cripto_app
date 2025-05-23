@@ -9,17 +9,20 @@
       href="{{ url_for('static', filename='style.css') }}"
     />
   </head>
+
   <body>
     <div class="faq">
       <h1>Perguntas Frequentes (FAQ)</h1>
 
       {% for item in faq_perguntas %}
-      <h3 class="pergunta">
-        {{ item.pergunta }}
-        <span class="seta">&#9656;</span>
-      </h3>
-      <div class="resposta" style="display: none">
-        <p>{{ item.resposta }}</p>
+      <div class="item">
+        <h3 class="pergunta">
+          {{ item.pergunta }}
+          <span class="seta">&#9656;</span>
+        </h3>
+        <div class="resposta">
+          <p>{{ item.resposta }}</p>
+        </div>
       </div>
       {% endfor %}
 
@@ -32,15 +35,12 @@
     </div>
 
     <script>
-      document.querySelectorAll(".faq .pergunta").forEach((el) => {
+      document.querySelectorAll(".pergunta").forEach((el) => {
         el.addEventListener("click", () => {
           el.classList.toggle("aberta");
           const resposta = el.nextElementSibling;
-          if (resposta.style.display === "block") {
-            resposta.style.display = "none";
-          } else {
-            resposta.style.display = "block";
-          }
+          resposta.style.display =
+            resposta.style.display === "block" ? "none" : "block";
         });
       });
     </script>

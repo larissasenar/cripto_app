@@ -300,58 +300,66 @@ ul {
 }
 
 /* === FAQ === */
-.faq-container {
+.faq {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 60px auto;
   padding: 20px;
+  background-color: #161b22;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 255, 170, 0.2);
 }
 
-.faq-container h1 {
-  color: #00c896;
-  font-size: 36px;
-  margin-bottom: 30px;
+.faq h1 {
   text-align: center;
+  color: #58a6ff;
+  margin-bottom: 30px;
 }
 
-.faq-container .pergunta {
-  font-weight: 700;
-  font-size: 20px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  color: #00c896;
-  transition: color 0.3s, background-color 0.3s;
-  padding: 10px 15px;
+.pergunta {
+  background-color: #21262d;
+  padding: 15px 20px;
+  margin: 10px 0;
   border-radius: 8px;
-  user-select: none;
+  cursor: pointer;
+  font-weight: 600;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s;
 }
 
-.faq-container .pergunta:hover {
-  background-color: #002b22;
-  color: #79b8ff;
+.pergunta:hover {
+  background-color: #30363d;
 }
 
-.faq-container .pergunta.aberta {
-  background-color: #003933;
-  color: #79b8ff;
-}
-
-.faq-container .seta {
-  font-size: 18px;
+.seta {
   transition: transform 0.3s ease;
 }
 
-.faq-container .pergunta.aberta .seta {
+.pergunta.aberta .seta {
   transform: rotate(90deg);
 }
 
-.faq-container .resposta {
-  margin-bottom: 20px;
-  font-size: 16px;
-  color: #c9d1d9;
-  padding-left: 10px;
+.resposta {
+  padding: 10px 20px;
+  background-color: #1c2128;
+  border-left: 3px solid #58a6ff;
+  margin-top: -8px;
+  margin-bottom: 10px;
+  border-radius: 0 0 8px 8px;
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === Botão Voltar === */
@@ -453,7 +461,87 @@ ul {
   background: #00c896 !important;
 }
 
+/* Carteira Digital */
+.saldo-total {
+  background-color: #003366;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 15px 0;
+  text-align: center;
+  color: white;
+}
+
+.operacoes {
+  background-color: #161b22;
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #00c896;
+}
+
+.btn-confirmar {
+  background-color: #00c896;
+  color: #0d1117;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.btn-confirmar:hover {
+  background-color: #00a67e;
+}
+
+.ativos table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.ativos th,
+.ativos td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #30363d;
+}
+
+.ativos th {
+  background-color: #0d1117;
+  color: #00c896;
+}
+
+.historico ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.historico li {
+  padding: 8px;
+  border-bottom: 1px solid #30363d;
+}
+
 /* === Responsividade === */
+@media (max-width: 600px) {
+  .faq {
+    margin: 20px;
+  }
+
+  .btn-voltar {
+    width: 100%;
+  }
+}
+
 @media (max-width: 700px) {
   .hamburger {
     display: block;
