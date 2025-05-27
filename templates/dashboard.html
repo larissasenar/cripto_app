@@ -36,9 +36,7 @@
                     <a href="#grafico"><i class="fas fa-chart-line"></i> Gráfico</a>
                 </li>
                 <li>
-                    <a href="#conversor"
-                        ><i class="fas fa-exchange-alt"></i> Conversor</a
-                    >
+                    <a href="#conversor" ><i class="fas fa-exchange-alt"></i> Conversor</a>
                 </li>
                 <li>
                     <a href="#investir"><i class="fas fa-piggy-bank"></i> Investir</a>
@@ -88,7 +86,7 @@
                 <p><i class="fas fa-calendar-day"></i> {{ data }}</p>
             </section>
 
-            <section id="carteira" class="card">
+           <section id="carteira" class="card">
                 <h3><i class="fas fa-wallet"></i> Minha Carteira Digital</h3>
 
                 <div class="saldo-total">
@@ -98,101 +96,127 @@
                     </button>
                 </div>
 
-                <div
-                    id="carteira-detalhes"
-                    style="display: none; margin-top: 15px"
-                >
-                    {% if mensagem %}
-                    <div class="alert success">{{ mensagem }}</div>
-                    {% endif %} {% if erro %}
-                    <div class="alert error">{{ erro }}</div>
-                    {% endif %}
-
-                    <div class="operacoes">
-                        <h4><i class="fas fa-cash-register"></i> Operações</h4>
-                        <form method="POST">
-                            <input type="number" step="0.01" name="valor" required />
-                            <select name="moeda">
-                                <option value="BRL">BRL</option>
-                            </select>
-                            <select name="operacao">
-                                <option value="deposito">Depósito</option>
-                                <option value="saque">Saque</option>
-                            </select>
-                            <button type="submit">Confirmar</button>
-                        </form>
-                    </div>
-
-                    <div class="ativos">
-                        <h4><i class="fas fa-cubes"></i> Meus Ativos</h4>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Moeda</th>
-                                    <th>Quantidade</th>
-                                    <th>Valor Atual</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for moeda, quantidade in carteira.items() %}
-                                <tr>
-                                    <td>{{ moeda.upper() }}</td>
-                                    <td>{{ "%.6f"|format(quantidade) }}</td>
-                                    <td>
-                                        {% if precos is defined and moeda in precos %}
-                                            R$ {{ "%.2f"|format(precos[moeda]) }}
-                                        {% else %}
-                                            Preço indisponível
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if precos[moeda] %}
-                                            R$ {{ "%.2f"|format(quantidade * precos[moeda]) }}
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="historico">
-                        <h4><i class="fas fa-clipboard-list"></i> Histórico de Transações</h4>
-                        <ul class="lista-transacoes">
-                            {% for trans in historico %}
-                            <li class="transacao-item {{ trans.tipo }}">
-                                <span class="transacao-info">
-                                    {% if trans.tipo == 'deposito' %}
-                                        <i class="fas fa-arrow-circle-down icon-deposito"></i>
-                                    {% elif trans.tipo == 'saque' %}
-                                        <i class="fas fa-arrow-circle-up icon-saque"></i>
-                                    {% else %}
-                                        <i class="fas fa-history"></i>
-                                    {% endif %}
-                                    <span class="transacao-data">
-                                        {% if isinstance(trans.data, datetime) or isinstance(trans.data, date) %}
-                                            [{{ trans.data.strftime('%d/%m/%Y %H:%M') }}]
-                                        {% else %}
-                                            [{{ trans.data }}]
-                                        {% endif %}
-                                    </span>
-                                    <span class="transacao-tipo">{{ trans.tipo|title }}:</span>
-                                </span>
-                                <span class="transacao-valor">
-                                    {{ "%.6f"|format(trans.valor) }} {{ trans.moeda.upper() }}
-                                </span>
-                            </li>
-                            {% else %}
-                            <li>Nenhuma transação registrada</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+        <div id="carteira-detalhes" style="display: none; margin-top: 15px">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container">
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">
+                    {% if category == 'success' %}<i class="fas fa-check-circle"></i>{% endif %}
+                    {% if category == 'error' %}<i class="fas fa-times-circle"></i>{% endif %}
+                    {% if category == 'info' %}<i class="fas fa-info-circle"></i>{% endif %}
+                    {{ message }}
+                    <button class="close-alert-btn">&times;</button>
                 </div>
-            </section>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
 
+        <div class="operacoes">
+            <h4><i class="fas fa-cash-register"></i> Operações</h4>
+            <form method="POST">
+                <input type="number" step="0.01" name="valor" required />
+                <select name="moeda">
+                    <option value="BRL">BRL</option>
+                </select>
+                <select name="operacao">
+                    <option value="deposito">Depósito</option>
+                    <option value="saque">Saque</option>
+                </select>
+                <button type="submit">Confirmar</button>
+            </form>
+        </div>
+
+        <div class="ativos">
+    <h4><i class="fas fa-cubes"></i> Meus Ativos</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Moeda</th>
+                <th>Quantidade</th>
+                <th>Valor Atual</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for moeda, quantidade in carteira.items() %}
+            <tr>
+                <td>{{ moeda.upper() }}</td>
+                <td>
+                    {% if moeda.upper() == 'BRL' %}
+                        {{ quantidade | format_brl }}
+                    {% else %}
+                        {{ quantidade | format_number(8) }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if precos is defined and moeda.lower() in precos %}
+                        R$ {{ precos[moeda.lower()] | format_brl }}
+                    {% else %}
+                        Preço indisponível
+                    {% endif %}
+                </td>
+                <td>
+                    {% if precos[moeda.lower()] is defined and precos[moeda.lower()] %}
+                        R$ {{ (quantidade * precos[moeda.lower()]) | format_brl }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+        <div class="historico">
+    <h4><i class="fas fa-clipboard-list"></i> Histórico de Transações</h4>
+    <table class="tabela-transacoes">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Data</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trans in historico_transacoes_app %}
+            <tr class="transacao-item {{ trans.tipo }}">
+                <td>
+                    {% if trans.tipo == 'deposito' %}
+                        <i class="fas fa-arrow-circle-down icon-deposito"></i> Depósito
+                    {% elif trans.tipo == 'saque' %}
+                        <i class="fas fa-arrow-circle-up icon-saque"></i> Saque
+                    {% else %}
+                        <i class="fas fa-history"></i> {{ trans.tipo|title }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if isinstance(trans.data, datetime) or isinstance(trans.data, date) %}
+                        {{ trans.data.strftime('%d/%m/%Y %H:%M') }}
+                    {% else %}
+                        {{ trans.data }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if trans.moeda.upper() == 'BRL' %}
+                        R$ {{ trans.valor | format_brl }}
+                    {% else %}
+                        {{ trans.valor | format_number(8) }} {{ trans.moeda.upper() }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Nenhuma transação registrada</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    </div>
+</section>
             <section id="cotacao" class="card">
                 <h3><i class="fas fa-coins"></i> Cotação Atual</h3>
                 <div class="cotacao-grid">
@@ -283,7 +307,7 @@
                         name="de"
                         id="de"
                         required
-                        placeholder="Ex: BTC"
+                        placeholder="Ex: BTC,ETH,LTC"
                     />
                     
                     <label for="para">Para:</label>
@@ -493,6 +517,7 @@
                                 }
                             });
                         }
+                        
                         setTimeout(() => {
                             alert.remove();
                             if (document.querySelectorAll('.alert-container .alert').length === 0) {
@@ -501,10 +526,11 @@
                         }, 5000);
                     });
 
+                    
                     alertModal.addEventListener('click', (event) => {
                         if (event.target === alertModal) {
                             alertModal.style.display = 'none';
-                            alerts.forEach(alert => alert.remove());
+                            alerts.forEach(alert => alert.remove()); // Also clear all alerts
                         }
                     });
                 }

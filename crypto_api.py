@@ -11,7 +11,6 @@ COINGECKO_IDS = {
     'litecoin': 'litecoin', 'ltc': 'litecoin',
     'dogecoin': 'dogecoin', 'doge': 'dogecoin',
     'cardano': 'cardano', 'ada': 'cardano',
-    'solana': 'solana', 'sol': 'solana',
     # Moedas fiduciárias: CoinGecko usa nomes completos para o parâmetro 'ids'
     # mas aceita siglas para 'vs_currencies'.
     'brl': 'brazilian-real',
@@ -33,11 +32,15 @@ def get_crypto_price(cripto_id: str, vs_currency: str = "brl") -> Optional[float
 
     Returns:
         Preço atual como float ou None em caso de erro.
+    Raises:
+        requests.exceptions.RequestException: Em caso de falha na requisição HTTP.
+        Exception: Para outros erros inesperados.
     """
     # Normaliza o ID da cripto usando o mapeamento para garantir que a API receba o ID correto
     cg_crypto_id = COINGECKO_IDS.get(cripto_id.lower())
     if not cg_crypto_id:
         print(f"Erro: ID da criptomoeda '{cripto_id}' não reconhecido ou mapeado.")
+        # Não lança exceção aqui, pois é um erro de mapeamento local, não da API externa.
         return None
     
     try:
@@ -51,11 +54,13 @@ def get_crypto_price(cripto_id: str, vs_currency: str = "brl") -> Optional[float
         preco = dados.get(cg_crypto_id, {}).get(vs_currency.lower())
         return preco
     except requests.exceptions.RequestException as e:
+        # Captura erros de requisição (incluindo HTTPError para 4xx/5xx) e os relança.
         print(f"[Erro] Falha ao buscar preço de {cripto_id} contra {vs_currency}: {e}")
-        return None
+        raise e # Relança a exceção
     except Exception as e:
+        # Captura outros erros inesperados e os relança.
         print(f"[Erro] Erro inesperado ao buscar preço de {cripto_id}: {e}")
-        return None
+        raise e # Relança a exceção
 
 
 def get_price_history(cripto_id: str, dias: int = 7, moeda: str = "brl") -> List[Dict[str, str]]:
@@ -70,6 +75,9 @@ def get_price_history(cripto_id: str, dias: int = 7, moeda: str = "brl") -> List
 
     Returns:
         Lista de dicionários, cada um com 'data' (formatada) e 'preco'.
+    Raises:
+        requests.exceptions.RequestException: Em caso de falha na requisição HTTP.
+        Exception: Para outros erros inesperados.
     """
     cg_cripto_id = COINGECKO_IDS.get(cripto_id.lower())
     if not cg_cripto_id:
@@ -92,10 +100,10 @@ def get_price_history(cripto_id: str, dias: int = 7, moeda: str = "brl") -> List
         return lista_precos
     except requests.exceptions.RequestException as e:
         print(f"[Erro] Falha ao buscar histórico de {cripto_id}: {e}")
-        return []
+        raise e # Relança a exceção
     except Exception as e:
         print(f"[Erro] Erro inesperado ao buscar histórico de {cripto_id}: {e}")
-        return []
+        raise e # Relança a exceção
 
 
 def converter_crypto(from_id: str, to_id: str) -> Optional[float]:
@@ -109,6 +117,9 @@ def converter_crypto(from_id: str, to_id: str) -> Optional[float]:
 
     Returns:
         Taxa de conversão (1 FROM_ID = X TO_ID) como float ou None em caso de erro/moeda não suportada.
+    Raises:
+        requests.exceptions.RequestException: Em caso de falha na requisição HTTP.
+        Exception: Para outros erros inesperados.
     """
     # Normaliza os IDs de entrada para os IDs da CoinGecko
     from_cg_id = COINGECKO_IDS.get(from_id.lower())
@@ -175,10 +186,10 @@ def converter_crypto(from_id: str, to_id: str) -> Optional[float]:
 
     except requests.exceptions.RequestException as e:
         print(f"[Erro] Falha na conversão de {from_id} para {to_id}: {e}")
-        return None
+        raise e # Relança a exceção
     except Exception as e:
         print(f"[Erro] Erro inesperado na conversão de {from_id} para {to_id}: {e}")
-        return None
+        raise e # Relança a exceção
 
 
 def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tuple[List[str], List[float]]:
@@ -194,6 +205,9 @@ def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tup
         Tupla contendo:
             - Lista de labels de datas formatadas (para o eixo X do gráfico).
             - Lista de valores de preços correspondentes (para o eixo Y do gráfico).
+    Raises:
+        requests.exceptions.RequestException: Em caso de falha na requisição HTTP (incluindo 429 Too Many Requests).
+        Exception: Para outros erros inesperados.
     """
     cg_cripto_id = COINGECKO_IDS.get(cripto_id.lower())
     if not cg_cripto_id:
@@ -209,7 +223,7 @@ def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tup
         }
 
         resposta = requests.get(url, params=params, timeout=5)
-        resposta.raise_for_status()
+        resposta.raise_for_status() # Levanta um HTTPError para 4xx/5xx responses
         dados = resposta.json()
         precos = dados.get('prices', [])
 
@@ -225,8 +239,10 @@ def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tup
 
         return labels, valores
     except requests.exceptions.RequestException as e:
+        # Captura erros de requisição (incluindo HTTPError para 429) e relança.
         print(f"[Erro] Falha ao obter histórico do CoinGecko para {cripto_id}: {e}")
-        return [], []
+        raise e # Relança a exceção
     except Exception as e:
+        # Captura outros erros inesperados e relança.
         print(f"[Erro] Erro inesperado ao obter histórico do CoinGecko para {cripto_id}: {e}")
-        return [], []
+        raise e # Relança a exceção

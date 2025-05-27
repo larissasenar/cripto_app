@@ -3468,8 +3468,11 @@ C:.
 ¦   ¦   style.css
 ¦   ¦   
 ¦   +---images
-¦           API_User_Django-main.zip
-¦           fundo-login.jpg
+¦   ¦       API_User_Django-main.zip
+¦   ¦       fundo-login.jpg
+¦   ¦       
+¦   +---js
+¦           menu.js
 ¦           
 +---templates
 ¦       base.html

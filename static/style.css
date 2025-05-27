@@ -263,26 +263,6 @@ a:focus-visible {
   margin-bottom: 15px;
 }
 
-.alert {
-  padding: 12px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.alert.success {
-  background-color: #1c3d2f;
-  color: #6effb0;
-  border: 1px solid #00c896;
-}
-
-.alert.error {
-  background-color: #3d1c24;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
-}
-
 ul {
   padding-left: 20px;
   list-style-type: disc;
@@ -566,7 +546,6 @@ ul {
   background: #00c896 !important;
 }
 
-/* --- Digital Wallet --- */
 #carteira .saldo-total {
   background-color: #003366;
   padding: 18px 20px;
@@ -670,6 +649,10 @@ ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #30363d;
+  border-radius: 8px;
 }
 
 .historico li {
@@ -682,6 +665,69 @@ ul {
 }
 .historico li:last-child {
   border-bottom: none;
+}
+.historico .transacao-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.historico .icon-deposito {
+  color: #00c896;
+}
+.historico .icon-saque {
+  color: #ff6b6b;
+}
+
+/* --- Estilos para a Tabela de Histórico de Transações --- */
+.historico .tabela-transacoes {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px; /* Ajustado para um espaçamento mais uniforme */
+  background-color: #161b22; /* Cor de fundo similar aos cards */
+  border-radius: 8px; /* Bordas arredondadas */
+  overflow: hidden; /* Garante que as bordas arredondadas sejam aplicadas ao conteúdo */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra para profundidade */
+}
+
+.historico .tabela-transacoes th,
+.historico .tabela-transacoes td {
+  padding: 12px 15px; /* Espaçamento interno das células */
+  text-align: left;
+  border-bottom: 1px solid #30363d; /* Cor da borda similar a outros elementos */
+  color: #c9d1d9; /* Cor do texto padrão */
+}
+
+.historico .tabela-transacoes th {
+  background-color: #0d1117; /* Cor de fundo para o cabeçalho */
+  color: #00c896; /* Cor do texto do cabeçalho */
+  font-weight: bold;
+  text-transform: uppercase; /* Texto em maiúsculas para o cabeçalho */
+  font-size: 0.9em;
+}
+
+.historico .tabela-transacoes tr:hover {
+  background-color: #21262d; /* Cor de fundo ao passar o mouse */
+}
+
+/* Estilos para os ícones dentro da tabela */
+.historico .tabela-transacoes .icon-deposito {
+  color: #00c896; /* Verde para depósitos */
+}
+
+.historico .tabela-transacoes .icon-saque {
+  color: #ff6b6b; /* Vermelho para saques */
+}
+
+.historico .tabela-transacoes td i {
+  margin-right: 5px; /* Espaçamento entre ícone e texto */
+}
+
+/* Estilo para a mensagem de "Nenhuma transação registrada" */
+.historico .tabela-transacoes tr td[colspan="3"] {
+  text-align: center;
+  font-style: italic;
+  padding: 20px;
+  color: #8b949e;
 }
 
 .cotacao-grid {
@@ -717,31 +763,52 @@ ul {
   text-align: right;
 }
 
-.alert-container {
+.modal-backdrop {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   z-index: 10000;
+  padding-top: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background-color: transparent;
+  padding: 0px;
+  border-radius: 8px;
+  max-width: 500px;
   width: 90%;
-  max-width: 400px;
-  text-align: center;
-  pointer-events: none;
+  box-shadow: none;
+}
+
+.alert-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
 .alert {
   padding: 15px 20px;
   border-radius: 8px;
   margin-bottom: 0;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInOut 5s ease-in-out forwards;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  position: relative;
+  font-weight: bold;
+  animation: fadeInDown 0.5s ease-out;
+  pointer-events: auto;
+}
+
+.alert i.fas {
+  margin-right: 10px;
+  font-size: 1.2em;
 }
 
 .alert.success {
@@ -762,107 +829,65 @@ ul {
   border: 1px solid #58a6ff;
 }
 
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-
-.historico .lista-transacoes {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.historico .transacao-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #30363d;
-  color: #c9d1d9;
-  font-size: 0.95em;
-}
-
-.historico .transacao-item:last-child {
-  border-bottom: none;
-}
-
-.historico .transacao-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.historico .transacao-item i {
-  font-size: 1.1em;
-}
-
-.historico .transacao-item.deposito .icon-deposito {
-  color: #00c896;
-}
-
-.historico .transacao-item.saque .icon-saque {
-  color: #ff6b6b;
-}
-
-.historico .transacao-data {
-  color: #8b949e;
-}
-
-.historico .transacao-tipo {
+.close-alert-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
   font-weight: bold;
-  color: #58a6ff;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: inherit;
+  line-height: 1;
+  padding: 0 5px;
 }
 
-.historico .transacao-valor {
-  font-weight: bold;
-  color: #c9d1d9;
+.close-alert-btn:hover {
+  opacity: 0.7;
 }
 
-/* --- Footer Styles --- */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .main-footer {
-  background-color: #161b22; /* Dark background, similar to your cards */
-  color: #c9d1d9; /* Light text color */
-  padding: 40px 20px; /* Ample padding */
-  border-top: 1px solid #30363d; /* Subtle top border */
+  background-color: #161b22;
+  color: #c9d1d9;
+  padding: 40px 20px;
+  border-top: 1px solid #30363d;
   font-size: 0.95em;
-  position: relative; /* Needed for any absolute positioning inside */
-  margin-top: 50px; /* Space above the footer from the last main section */
+  position: relative;
+  margin-top: 50px;
 }
 
 .footer-content {
   display: flex;
-  flex-wrap: wrap; /* Allow sections to wrap on smaller screens */
-  justify-content: space-around; /* Distribute sections evenly */
-  gap: 30px; /* Space between columns */
-  max-width: 1200px; /* Max width to keep content contained */
-  margin: 0 auto; /* Center the content */
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .footer-section {
-  flex: 1; /* Allow sections to grow */
-  min-width: 250px; /* Minimum width for each section */
+  flex: 1;
+  min-width: 250px;
   padding: 10px;
   box-sizing: border-box;
 }
 
 .footer-section h2,
 .footer-section h3 {
-  color: #00c896; /* Your accent green for headings */
+  color: #00c896;
   margin-bottom: 20px;
   font-size: 1.3em;
   display: flex;
@@ -872,7 +897,7 @@ ul {
 
 .footer-section h2 i,
 .footer-section h3 i {
-  color: #58a6ff; /* Blue accent for icons */
+  color: #58a6ff;
 }
 
 .footer-section p {
@@ -891,7 +916,7 @@ ul {
 }
 
 .footer-section ul li a {
-  color: #c9d1d9; /* Link color */
+  color: #c9d1d9;
   text-decoration: none;
   transition: color 0.2s ease;
   display: flex;
@@ -900,7 +925,7 @@ ul {
 }
 
 .footer-section ul li a:hover {
-  color: #00c896; /* Hover effect for links */
+  color: #00c896;
   text-decoration: underline;
 }
 
@@ -910,11 +935,11 @@ ul {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #8b949e; /* Muted color for contact info */
+  color: #8b949e;
 }
 
 .contact-info i {
-  color: #58a6ff; /* Blue accent for contact icons */
+  color: #58a6ff;
 }
 
 .social-links {
@@ -931,16 +956,16 @@ ul {
 }
 
 .social-links a:hover {
-  color: #00c896; /* Green hover for social icons */
+  color: #00c896;
   transform: translateY(-3px);
 }
 
 .newsletter form {
   display: flex;
-  flex-direction: row; /* Keep input and button side by side */
+  flex-direction: row;
   gap: 5px;
-  max-width: none; /* Override form's max-width */
-  margin: 0; /* Remove default form margins */
+  max-width: none;
+  margin: 0;
 }
 
 .newsletter input[type="email"] {
@@ -972,22 +997,21 @@ ul {
   margin-top: 40px;
   padding-top: 20px;
   border-top: 1px solid #30363d;
-  color: #8b949e; /* Muted color for copyright */
+  color: #8b949e;
   font-size: 0.9em;
 }
 
-/* Responsive adjustments for footer */
 @media (max-width: 768px) {
   .footer-content {
-    flex-direction: column; /* Stack sections vertically on smaller screens */
+    flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
   .footer-section {
-    min-width: unset; /* Remove min-width to allow full width */
-    width: 100%; /* Take full width */
-    margin-bottom: 30px; /* More space between stacked sections */
+    min-width: unset;
+    width: 100%;
+    margin-bottom: 30px;
   }
 
   .footer-section:last-child {
@@ -996,20 +1020,20 @@ ul {
 
   .footer-section h2,
   .footer-section h3 {
-    justify-content: center; /* Center headings and their icons */
+    justify-content: center;
   }
 
   .contact-info span {
-    justify-content: center; /* Center contact info */
+    justify-content: center;
   }
 
   .social-links {
-    justify-content: center; /* Center social icons */
+    justify-content: center;
   }
 
   .newsletter form {
-    max-width: 300px; /* Limit newsletter form width */
-    margin: 0 auto; /* Center newsletter form */
+    max-width: 300px;
+    margin: 0 auto;
   }
 }
 
@@ -1034,7 +1058,6 @@ ul {
   }
 }
 
-/* --- Responsive Design --- */
 @media (max-width: 600px) {
   .faq {
     margin: 20px;
@@ -1154,12 +1177,7 @@ ul {
     width: 100%;
     margin-left: 0;
   }
-  .alert-container {
-    width: 95%;
-    max-width: 95%;
-  }
 
-  /* Tables responsiveness: Allow horizontal scrolling */
   .ativos table,
   .lista-investimentos {
     display: block;
@@ -1173,6 +1191,19 @@ ul {
   .lista-investimentos th,
   .lista-investimentos td {
     white-space: nowrap;
+  }
+
+  .historico .tabela-transacoes {
+    display: block; /* Permite scroll horizontal em telas menores */
+    overflow-x: auto;
+    white-space: nowrap; /* Impede a quebra de linha do conteúdo da célula */
+    -webkit-overflow-scrolling: touch; /* Suaviza o scroll em dispositivos iOS */
+  }
+
+  .historico .tabela-transacoes th,
+  .historico .tabela-transacoes td {
+    white-space: nowrap; /* Garante que o conteúdo não quebre linha */
+    padding: 10px 12px; /* Ajusta o padding para telas menores */
   }
 }
 
@@ -1194,18 +1225,16 @@ ul {
   }
 }
 
-/* Responsividade para iPhone 12 Pro (largura 390px) */
 @media only screen and (max-width: 390px) {
   body {
     flex-direction: column;
   }
 
-  /* Sidebar se transforma em menu oculto (offcanvas) */
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 260px; /* um pouco mais largo que antes para facilitar toque */
+    width: 260px;
     height: 100vh;
     padding: 20px;
     background-color: #161b22;
@@ -1215,42 +1244,35 @@ ul {
     overflow-y: auto;
   }
 
-  /* Quando sidebar estiver aberto */
   body.sidebar-open .sidebar {
     transform: translateX(0);
   }
 
-  /* Ajusta o overlay para cima do conteúdo */
   body.sidebar-open::before {
     display: block;
     z-index: 1099;
   }
 
-  /* Esconde o conteúdo principal quando menu aberto para foco */
   body.sidebar-open .main {
     pointer-events: none;
     user-select: none;
   }
 
-  /* Ajusta botão hamburger para ser visível no mobile */
   .hamburger {
     display: block;
   }
 
-  /* Main ocupa 100% da largura quando sidebar está fechado */
   .main {
     margin-left: 0;
     padding: 20px 15px;
     min-height: auto;
   }
 
-  /* Ajusta grid das cards para 1 coluna */
   .cards-container {
     grid-template-columns: 1fr !important;
     gap: 15px;
   }
 
-  /* Ajuste geral de fontes para melhor leitura */
   h1 {
     font-size: 28px;
   }
@@ -1264,7 +1286,6 @@ ul {
     font-size: 18px;
   }
 
-  /* Ajusta botões para ocupar toda largura */
   input[type="submit"],
   button[type="submit"],
   .btn-export {
