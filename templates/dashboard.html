@@ -164,16 +164,17 @@
     <div class="operacoes">
       <h4>Operações</h4>
       <form method="POST">
-        <input type="number" name="valor" required>
-        <select name="moeda">
-          <option value="BRL">BRL</option>
-        </select>
-        <select name="operacao">
-          <option value="deposito">Depósito</option>
-          <option value="saque">Saque</option>
-        </select>
-        <button type="submit">Confirmar</button>
-      </form>
+    <input type="number" step="0.01" name="valor" required>
+    <select name="moeda">
+        <option value="BRL">BRL</option>
+    </select>
+    <select name="operacao">
+        <option value="deposito">Depósito</option>
+        <option value="saque">Saque</option>
+    </select>
+    <button type="submit">Confirmar</button>
+</form>
+
     </div>
 
     <div class="ativos">

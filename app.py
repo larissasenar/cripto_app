@@ -95,7 +95,6 @@ def calcular_saldo_brl(email):
 
     return round(saldo_total, 2)
 
-
 # DASHBOARD
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
@@ -115,6 +114,7 @@ def dashboard():
 
     # FORMULÁRIOS
     if request.method == 'POST':
+        # Formulário de Investimento
         if 'investir' in request.form:
             cripto = request.form['cripto']
             try:
@@ -128,15 +128,46 @@ def dashboard():
             except ValueError:
                 flash("Valor inválido para investimento.", "error")
 
+        # Formulário de Conversão
         elif 'converter' in request.form:
             de = request.form['de']
             para = request.form['para']
             resultado_conversao = converter_crypto(de, para)
 
+        # Formulário de Busca de Criptomoeda
         elif 'buscar' in request.form:
             cripto = request.form['cripto']
 
-    # DADOS
+        # Formulário de Carteira (Depósito/Saque)
+        elif 'operacao' in request.form:
+            try:
+                valor = float(request.form['valor'])
+                moeda = request.form.get('moeda', 'BRL')
+                tipo_operacao = request.form.get('operacao')
+
+                if tipo_operacao == 'deposito':
+                    atualizar_saldo(email, moeda, valor)
+                    registrar_transacao(email, 'deposito', moeda, valor)
+                    flash(f"Depósito de R$ {valor:.2f} realizado com sucesso!", "success")
+
+                elif tipo_operacao == 'saque':
+                    saldo_atual = get_saldo(email, moeda)
+                    if saldo_atual >= valor:
+                        atualizar_saldo(email, moeda, -valor)
+                        registrar_transacao(email, 'saque', moeda, valor)
+                        flash(f"Saque de R$ {valor:.2f} realizado com sucesso!", "success")
+                    else:
+                        flash("Saldo insuficiente para esta operação.", "error")
+
+                else:
+                    flash("Tipo de operação inválido.", "error")
+
+            except ValueError:
+                flash("Valor inválido.", "error")
+            except Exception as e:
+                flash(f"Erro na operação: {str(e)}", "error")
+
+    # DADOS PARA EXIBIÇÃO
     investimentos = listar_investimentos(email) or []
     preco_atual = get_crypto_price(cripto) or 0.0
     historico_raw = get_price_history(cripto) or []
@@ -164,7 +195,11 @@ def dashboard():
         carteira[cripto_nome] = carteira.get(cripto_nome, 0.0) + quantidade
 
     labels, dados_grafico = obter_historico_coingecko(cripto_id=cripto)
-    saldo_brl = calcular_saldo_brl(email)
+    saldo_brl = get_saldo(email, 'BRL')
+    historico_transacoes = get_historico_transacoes(email)
+    carteira_completa = get_carteira_completa(email)
+    precos = {moeda: get_crypto_price(moeda) if moeda != 'BRL' else 1 for moeda in carteira_completa.keys()}
+
     agora = datetime.now()
 
     return render_template('dashboard.html',
@@ -179,59 +214,9 @@ def dashboard():
         dados=dados_grafico,
         data=agora.strftime('%d/%m/%Y'),
         hora=agora.strftime('%H:%M:%S'),
-        carteira=carteira,
-        precos={cripto: preco_atual}
-    )
-
-
-# CARTEIRA DIGITAL
-@app.route('/carteira', methods=['GET', 'POST'])
-def carteira():
-    if 'usuario' not in session:
-        return redirect('/login')
-
-    email = session['usuario']['email']
-
-    if request.method == 'POST':
-        try:
-            valor = float(request.form['valor'])
-            moeda = request.form.get('moeda', 'BRL')
-            tipo_operacao = request.form.get('operacao')
-
-            if tipo_operacao == 'deposito':
-                atualizar_saldo(email, moeda, valor)
-                registrar_transacao(email, 'deposito', moeda, valor)
-                flash(f"Depósito de R$ {valor:.2f} realizado com sucesso!", "success")
-
-            elif tipo_operacao == 'saque':
-                saldo_atual = get_saldo(email, moeda)
-                if saldo_atual >= valor:
-                    atualizar_saldo(email, moeda, -valor)
-                    registrar_transacao(email, 'saque', moeda, valor)
-                    flash(f"Saque de R$ {valor:.2f} realizado com sucesso!", "success")
-                else:
-                    flash("Saldo insuficiente para esta operação.", "error")
-
-            else:
-                flash("Tipo de operação inválido.", "error")
-
-        except ValueError:
-            flash("Valor inválido.", "error")
-        except Exception as e:
-            flash(f"Erro na operação: {str(e)}", "error")
-
-        return redirect('/carteira')
-
-    saldo_brl = get_saldo(email, 'BRL')
-    historico = get_historico_transacoes(email)
-    carteira_completa = get_carteira_completa(email)
-    precos = {moeda: get_crypto_price(moeda) if moeda != 'BRL' else 1 for moeda in carteira_completa.keys()}
-
-    return render_template('carteira.html',
-        saldo_brl=saldo_brl,
-        historico=historico,
         carteira=carteira_completa,
-        precos=precos
+        precos=precos,
+        historico=historico_transacoes
     )
 
 
