@@ -1,122 +1,211 @@
 import requests
 from datetime import datetime
-import time
 from typing import Optional, List, Tuple, Dict
 
-# Cache para preços atuais e históricos (tempo em segundos)
-cache_precos: Dict[str, Dict] = {}
-cache_historico: Dict[str, Dict] = {}
-tempo_cache = 60  # tempo de cache em segundos
+# Mapeamento de IDs comuns para os IDs da CoinGecko
+# Ex: 'btc' -> 'bitcoin', 'brl' -> 'brazilian-real'
+# Este mapa é usado para garantir que as requisições à API CoinGecko usem os IDs corretos.
+COINGECKO_IDS = {
+    'bitcoin': 'bitcoin', 'btc': 'bitcoin',
+    'ethereum': 'ethereum', 'eth': 'ethereum',
+    'litecoin': 'litecoin', 'ltc': 'litecoin',
+    'dogecoin': 'dogecoin', 'doge': 'dogecoin',
+    'cardano': 'cardano', 'ada': 'cardano',
+    'solana': 'solana', 'sol': 'solana',
+    # Moedas fiduciárias: CoinGecko usa nomes completos para o parâmetro 'ids'
+    # mas aceita siglas para 'vs_currencies'.
+    'brl': 'brazilian-real',
+    'usd': 'usd',
+    'eur': 'eur'
+}
 
+# URL base para a API CoinGecko
+BASE_URL_COINGECKO = "https://api.coingecko.com/api/v3"
 
-def get_crypto_price(cripto: str, moeda: str = "usd") -> Optional[float]:
+def get_crypto_price(cripto_id: str, vs_currency: str = "brl") -> Optional[float]:
     """
     Retorna o preço atual de uma criptomoeda em relação à moeda especificada.
-    
+    Esta função faz uma requisição direta à API CoinGecko.
+
     Args:
-        cripto: Nome do identificador da criptomoeda (ex: 'bitcoin').
-        moeda: Moeda para conversão (ex: 'usd', 'brl').
+        cripto_id: Identificador da criptomoeda (ex: 'bitcoin', 'btc'). Será mapeado para ID da CoinGecko.
+        vs_currency: Moeda para conversão (ex: 'usd', 'brl').
 
     Returns:
         Preço atual como float ou None em caso de erro.
     """
-    agora = time.time()
-    cache_key = f"{cripto}_{moeda}"
-    if cache_key in cache_precos and (agora - cache_precos[cache_key]['tempo'] < tempo_cache):
-        return cache_precos[cache_key]['preco']
-
+    # Normaliza o ID da cripto usando o mapeamento para garantir que a API receba o ID correto
+    cg_crypto_id = COINGECKO_IDS.get(cripto_id.lower())
+    if not cg_crypto_id:
+        print(f"Erro: ID da criptomoeda '{cripto_id}' não reconhecido ou mapeado.")
+        return None
+    
     try:
-        url = f'https://api.coingecko.com/api/v3/simple/price?ids={cripto}&vs_currencies={moeda}'
+        # A API simple/price aceita a sigla para vs_currencies (ex: 'brl')
+        url = f'{BASE_URL_COINGECKO}/simple/price?ids={cg_crypto_id}&vs_currencies={vs_currency.lower()}'
         resposta = requests.get(url, timeout=5)
-        resposta.raise_for_status()
+        resposta.raise_for_status() # Levanta um erro se a requisição não for bem-sucedida (status 4xx ou 5xx)
         dados = resposta.json()
-        preco = dados.get(cripto, {}).get(moeda)
-        if preco is not None:
-            cache_precos[cache_key] = {'preco': preco, 'tempo': agora}
+        
+        # Acessa o preço usando o ID da CoinGecko e a moeda de comparação
+        preco = dados.get(cg_crypto_id, {}).get(vs_currency.lower())
         return preco
+    except requests.exceptions.RequestException as e:
+        print(f"[Erro] Falha ao buscar preço de {cripto_id} contra {vs_currency}: {e}")
+        return None
     except Exception as e:
-        print(f"[Erro] Falha ao buscar preço de {cripto}: {e}")
+        print(f"[Erro] Erro inesperado ao buscar preço de {cripto_id}: {e}")
         return None
 
 
-def get_price_history(cripto: str, dias: int = 7, moeda: str = "usd") -> List[Dict[str, str]]:
+def get_price_history(cripto_id: str, dias: int = 7, moeda: str = "brl") -> List[Dict[str, str]]:
     """
     Retorna histórico de preços de uma criptomoeda nos últimos dias.
+    Faz uma requisição direta à API CoinGecko.
 
     Args:
-        cripto: Nome do identificador da criptomoeda (ex: 'bitcoin').
-        dias: Quantidade de dias a serem buscados.
-        moeda: Moeda para conversão.
+        cripto_id: Identificador da criptomoeda (ex: 'bitcoin'). Será mapeado para ID da CoinGecko.
+        dias: Quantidade de dias a serem buscados para o histórico.
+        moeda: Moeda para conversão (ex: 'brl').
 
     Returns:
-        Lista de dicionários com data e preço.
+        Lista de dicionários, cada um com 'data' (formatada) e 'preco'.
     """
-    agora = time.time()
-    cache_key = f"{cripto}_{moeda}_{dias}"
-    if cache_key in cache_historico and (agora - cache_historico[cache_key]['tempo'] < tempo_cache):
-        return cache_historico[cache_key]['dados']
-
+    cg_cripto_id = COINGECKO_IDS.get(cripto_id.lower())
+    if not cg_cripto_id:
+        print(f"Erro: ID da criptomoeda '{cripto_id}' não reconhecido ou mapeado para histórico.")
+        return []
+    
     try:
-        url = f'https://api.coingecko.com/api/v3/coins/{cripto}/market_chart?vs_currency={moeda}&days={dias}'
+        url = f'{BASE_URL_COINGECKO}/coins/{cg_cripto_id}/market_chart?vs_currency={moeda.lower()}&days={dias}'
         resposta = requests.get(url, timeout=5)
         resposta.raise_for_status()
         dados = resposta.json()
         lista_precos = []
 
         for item in dados.get('prices', []):
-            timestamp = item[0] / 1000  # converter de milissegundos
-            data_formatada = datetime.fromtimestamp(timestamp).strftime('%d/%m')
+            timestamp = item[0] / 1000  # Converter timestamp de milissegundos para segundos
+            data_formatada = datetime.fromtimestamp(timestamp).strftime('%d/%m') # Formato DD/MM
             preco = round(item[1], 2)
             lista_precos.append({'data': data_formatada, 'preco': preco})
 
-        cache_historico[cache_key] = {'dados': lista_precos, 'tempo': agora}
         return lista_precos
+    except requests.exceptions.RequestException as e:
+        print(f"[Erro] Falha ao buscar histórico de {cripto_id}: {e}")
+        return []
     except Exception as e:
-        print(f"[Erro] Falha ao buscar histórico de {cripto}: {e}")
+        print(f"[Erro] Erro inesperado ao buscar histórico de {cripto_id}: {e}")
         return []
 
 
-def converter_crypto(de: str, para: str) -> Optional[float]:
+def converter_crypto(from_id: str, to_id: str) -> Optional[float]:
     """
-    Converte o valor de uma criptomoeda para outra.
+    Converte o valor de uma moeda/cripto para outra, retornando a taxa de conversão.
+    Lida com conversões Crypto<->Fiat e Crypto<->Crypto de forma inteligente.
 
     Args:
-        de: Identificador da criptomoeda de origem (ex: 'bitcoin').
-        para: Moeda de destino (ex: 'brl').
+        from_id: ID da moeda/cripto de origem (ex: 'btc', 'brl', 'ethereum').
+        to_id: ID da moeda/cripto de destino (ex: 'eth', 'usd', 'bitcoin').
 
     Returns:
-        Valor convertido como float ou None em caso de erro.
+        Taxa de conversão (1 FROM_ID = X TO_ID) como float ou None em caso de erro/moeda não suportada.
     """
+    # Normaliza os IDs de entrada para os IDs da CoinGecko
+    from_cg_id = COINGECKO_IDS.get(from_id.lower())
+    to_cg_id = COINGECKO_IDS.get(to_id.lower())
+
+    # Se algum ID não for reconhecido, retorna None
+    if not from_cg_id or not to_cg_id:
+        print(f"Erro de conversão: IDs '{from_id}' ou '{to_id}' não reconhecidos/mapeados para CoinGecko.")
+        return None
+
+    # Se as moedas forem as mesmas, a taxa é 1:1
+    if from_cg_id == to_cg_id:
+        return 1.0
+
+    # Define se as moedas são fiduciárias (fiat) com base nos IDs da CoinGecko
+    is_from_fiat = from_cg_id in ['brazilian-real', 'usd', 'eur']
+    is_to_fiat = to_cg_id in ['brazilian-real', 'usd', 'eur']
+
     try:
-        url = f'https://api.coingecko.com/api/v3/simple/price?ids={de}&vs_currencies={para}'
-        resposta = requests.get(url, timeout=5)
-        resposta.raise_for_status()
-        dados = resposta.json()
-        return dados.get(de, {}).get(para)
+        if is_from_fiat and is_to_fiat:
+            # Caso 1: Fiat para Fiat (Ex: BRL para USD)
+            # A CoinGecko API não faz isso diretamente no simple/price.
+            # Vamos tentar converter via USD (se ambas não forem USD, obtemos preço em USD e dividimos).
+            if from_cg_id == 'usd': # Se a origem já é USD e destino não, já sabemos como fazer
+                 price_to_fiat_in_usd = get_crypto_price(to_cg_id, 'usd') # Ex: obter EUR em USD
+                 return 1 / price_to_fiat_in_usd if price_to_fiat_in_usd else None
+            elif to_cg_id == 'usd': # Se o destino é USD
+                return get_crypto_price(from_cg_id, 'usd') # Ex: obter BRL em USD
+            else: # Nenhuma é USD, então converte ambas para USD e depois divide
+                from_fiat_in_usd = get_crypto_price(from_cg_id, 'usd')
+                to_fiat_in_usd = get_crypto_price(to_cg_id, 'usd')
+                if from_fiat_in_usd is not None and to_fiat_in_usd is not None and to_fiat_in_usd != 0:
+                    return from_fiat_in_usd / to_fiat_in_usd
+                else:
+                    print(f"Erro: Não foi possível obter preços em USD para conversão Fiat-Fiat entre {from_id} e {to_id}.")
+                    return None
+
+        elif is_from_fiat and not is_to_fiat:
+            # Caso 2: Fiat para Crypto (Ex: BRL para BTC)
+            # A API geralmente dá Crypto para Fiat (BTC para BRL). Precisamos inverter a taxa.
+            crypto_price_in_fiat = get_crypto_price(to_cg_id, from_cg_id) # Ex: bitcoin vs brazilian-real
+            if crypto_price_in_fiat is not None and crypto_price_in_fiat != 0:
+                return 1 / crypto_price_in_fiat # 1 BRL = X BTC (inverso de BTC=X BRL)
+            else:
+                print(f"Erro: Não foi possível obter o preço de {to_id} em {from_id} para conversão Fiat-Crypto.")
+                return None
+
+        elif not is_from_fiat and is_to_fiat:
+            # Caso 3: Crypto para Fiat (Ex: BTC para BRL)
+            # Requisição direta via get_crypto_price
+            return get_crypto_price(from_cg_id, to_cg_id)
+
+        else: # not is_from_fiat and not is_to_fiat
+            # Caso 4: Crypto para Crypto (Ex: BTC para ETH)
+            # Obtém os preços de ambas as criptos em uma moeda comum (BRL) e divide
+            from_crypto_price_brl = get_crypto_price(from_cg_id, 'brl')
+            to_crypto_price_brl = get_crypto_price(to_cg_id, 'brl')
+
+            if from_crypto_price_brl is not None and to_crypto_price_brl is not None and to_crypto_price_brl != 0:
+                return from_crypto_price_brl / to_crypto_price_brl # (BTC/BRL) / (ETH/BRL) = BTC/ETH
+            else:
+                print(f"Erro: Não foi possível obter preços em BRL para conversão Crypto-Crypto entre {from_id} e {to_id}.")
+                return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"[Erro] Falha na conversão de {from_id} para {to_id}: {e}")
+        return None
     except Exception as e:
-        print(f"[Erro] Falha na conversão de {de} para {para}: {e}")
+        print(f"[Erro] Erro inesperado na conversão de {from_id} para {to_id}: {e}")
         return None
 
 
-def obter_historico_coingecko(cripto_id: str = 'bitcoin', dias: int = 30) -> Tuple[List[str], List[float]]:
+def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tuple[List[str], List[float]]:
     """
     Obtém histórico de preços de uma criptomoeda para visualização em gráficos.
+    Faz uma requisição direta à API CoinGecko.
 
     Args:
-        cripto_id: Nome do identificador da criptomoeda.
-        dias: Número de dias do histórico.
+        cripto_id: Identificador da criptomoeda (ex: 'bitcoin'). Será mapeado para ID da CoinGecko.
+        days: Número de dias do histórico.
 
     Returns:
         Tupla contendo:
-            - Lista de datas formatadas.
-            - Lista de preços correspondentes.
+            - Lista de labels de datas formatadas (para o eixo X do gráfico).
+            - Lista de valores de preços correspondentes (para o eixo Y do gráfico).
     """
+    cg_cripto_id = COINGECKO_IDS.get(cripto_id.lower())
+    if not cg_cripto_id:
+        print(f"Erro: ID da criptomoeda '{cripto_id}' não reconhecido ou mapeado para histórico do CoinGecko.")
+        return [], []
+
     try:
-        url = f'https://api.coingecko.com/api/v3/coins/{cripto_id}/market_chart'
+        url = f'{BASE_URL_COINGECKO}/coins/{cg_cripto_id}/market_chart'
         params = {
-            'vs_currency': 'brl',
-            'days': dias,
-            'interval': 'daily'
+            'vs_currency': 'brl', # Moeda de comparação para o histórico
+            'days': days,
+            'interval': 'daily' # Garante um ponto de dados por dia para períodos maiores
         }
 
         resposta = requests.get(url, params=params, timeout=5)
@@ -128,11 +217,16 @@ def obter_historico_coingecko(cripto_id: str = 'bitcoin', dias: int = 30) -> Tup
         valores = []
 
         for timestamp, valor_preco in precos:
-            data = datetime.utcfromtimestamp(timestamp / 1000).strftime('%d/%m')
+            # Converte o timestamp (em milissegundos) para um objeto datetime
+            # e depois formata para DD/MM.
+            data = datetime.fromtimestamp(timestamp / 1000).strftime('%d/%m')
             labels.append(data)
             valores.append(round(valor_preco, 2))
 
         return labels, valores
+    except requests.exceptions.RequestException as e:
+        print(f"[Erro] Falha ao obter histórico do CoinGecko para {cripto_id}: {e}")
+        return [], []
     except Exception as e:
-        print(f"[Erro] Falha ao obter histórico do CoinGecko: {e}")
+        print(f"[Erro] Erro inesperado ao obter histórico do CoinGecko para {cripto_id}: {e}")
         return [], []

@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FAQ - Perguntas Frequentes</title>
+    <title>FAQ - Perguntas Frequentes | Cripto Invest</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
   </head>
 
@@ -16,11 +20,17 @@
 
       {% for item in faq_perguntas %}
       <div class="item">
-        <h3 class="pergunta">
+        <h3
+          class="pergunta"
+          role="button"
+          aria-expanded="false"
+          aria-controls="resposta-{{ loop.index }}"
+          tabindex="0"
+        >
           {{ item.pergunta }}
-          <span class="seta">&#9656;</span>
+          <i class="fas fa-chevron-right seta"></i>
         </h3>
-        <div class="resposta">
+        <div class="resposta" id="resposta-{{ loop.index }}">
           <p>{{ item.resposta }}</p>
         </div>
       </div>
@@ -30,17 +40,43 @@
         class="btn-voltar"
         onclick="window.location.href='{{ url_for('dashboard') }}'"
       >
-        Voltar ao Dashboard
+        <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
       </button>
     </div>
 
     <script>
       document.querySelectorAll(".pergunta").forEach((el) => {
         el.addEventListener("click", () => {
+          // Toggle class 'aberta' no elemento da pergunta
           el.classList.toggle("aberta");
+
+          // Toggle 'aria-expanded' para acessibilidade
+          const isExpanded = el.classList.contains("aberta");
+          el.setAttribute("aria-expanded", isExpanded);
+
+          // Alterna a exibição da resposta
           const resposta = el.nextElementSibling;
-          resposta.style.display =
-            resposta.style.display === "block" ? "none" : "block";
+          resposta.style.display = isExpanded ? "block" : "none";
+
+          // Alterna a classe do ícone para rotacionar
+          const icon = el.querySelector(".seta");
+          if (icon) {
+            if (isExpanded) {
+              icon.classList.remove("fa-chevron-right");
+              icon.classList.add("fa-chevron-down");
+            } else {
+              icon.classList.remove("fa-chevron-down");
+              icon.classList.add("fa-chevron-right");
+            }
+          }
+        });
+
+        // Adicionar suporte para teclado (Enter/Espaço)
+        el.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault(); // Previne a rolagem da página ao pressionar Espaço
+            el.click(); // Simula um clique
+          }
         });
       });
     </script>
