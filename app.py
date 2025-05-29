@@ -28,20 +28,22 @@ app = Flask(__name__)
 app.secret_key = "uma_chave_muito_secreta_e_aleatoria_para_o_flask_session_e_flash"
 
 # NOVO FILTRO PERSONALIZADO PARA FORMATAR NÚMEROS
-@app.template_filter('format_number')
 def format_number_filter(value, max_decimals=6):
-    if value is None:
-        return ""
-    num = float(value)
-    formatted = f"{num:.{max_decimals}f}"
-    return formatted.rstrip('0').rstrip('.') if '.' in formatted else formatted
+    try:
+        if value is None:
+            return ""
+        num = float(value)
+        formatted = f"{num:.{max_decimals}f}"
+        return formatted.rstrip('0').rstrip('.') if '.' in formatted else formatted
+    except Exception:
+        return value  # Retorna o original se não for possível converter
 
-#  FILTRO  PARA FORMATAR MOEDA BRL (sempre 2 casas, sem zeros extras)
-@app.template_filter('format_brl')
 def format_brl_filter(value):
-    if value is None:
+    try:
+        return f"{float(value):.2f}"
+    except Exception:
         return "0.00"
-    return f"{float(value):.2f}" # Sempre 2 casas decimais para BRL
+
 
 # Adicionado um print para verificar o diretório de trabalho atual
 print(f"DEBUG: Diretório de trabalho atual: {os.getcwd()}")
