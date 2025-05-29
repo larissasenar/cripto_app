@@ -467,7 +467,7 @@ def dashboard():
         date=date,
         historico_transacoes_app=historico_transacoes_processado 
     )
-
+return redirect('/login')
 
 @app.route('/faq')
 def faq():
