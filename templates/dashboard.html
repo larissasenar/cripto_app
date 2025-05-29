@@ -1,298 +1,311 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Dashboard | Cripto Invest</title>
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='style.css') }}"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        />
-    </head>
-    <body>
-        <button
-            class="hamburger"
-            aria-label="Menu"
-            aria-expanded="false"
-            aria-controls="sidebar"
-        >
-            <i class="fas fa-bars"></i>
-        </button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Cripto Invest</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <button
+      class="hamburger"
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="sidebar"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
 
-        <nav id="sidebar" class="sidebar" aria-label="Menu principal">
-            <h2><i class="fas fa-coins"></i> Cripto Invest</h2>
-            <ul>
-                <li>
-                    <a href="#carteira"><i class="fas fa-wallet"></i> Minha Carteira</a>
-                </li>
-                <li>
-                    <a href="#cotacao"><i class="fas fa-coins"></i> Cotação Atual</a>
-                </li>
-                <li>
-                    <a href="#grafico"><i class="fas fa-chart-line"></i> Gráfico</a>
-                </li>
-                <li>
-                    <a href="#conversor" ><i class="fas fa-exchange-alt"></i> Conversor</a>
-                </li>
-                <li>
-                    <a href="#investir"><i class="fas fa-piggy-bank"></i> Investir</a>
-                </li>
-                <li>
-                    <a href="#ganhos"><i class="fas fa-chart-bar"></i> Ganhos</a>
-                </li>
-                <li>
-                    <a href="#historico"><i class="fas fa-history"></i> Histórico</a>
-                </li>
-                <li>
-                    <a href="/faq"><i class="fas fa-question-circle"></i> FAQ</a>
-                </li>
-                <li>
-                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
-                </li>
-            </ul>
-        </nav>
+    <nav id="sidebar" class="sidebar" aria-label="Menu principal">
+      <h2><i class="fas fa-coins"></i> Cripto Invest</h2>
+      <ul>
+        <li>
+          <a href="#carteira"><i class="fas fa-wallet"></i> Minha Carteira</a>
+        </li>
+        <li>
+          <a href="#cotacao"><i class="fas fa-coins"></i> Cotação Atual</a>
+        </li>
+        <li>
+          <a href="#grafico"><i class="fas fa-chart-line"></i> Gráfico</a>
+        </li>
+        <li>
+          <a href="#conversor"><i class="fas fa-exchange-alt"></i> Conversor</a>
+        </li>
+        <li>
+          <a href="#investir"><i class="fas fa-piggy-bank"></i> Investir</a>
+        </li>
+        <li>
+          <a href="#ganhos"><i class="fas fa-chart-bar"></i> Ganhos</a>
+        </li>
+        <li>
+          <a href="#historico"><i class="fas fa-history"></i> Histórico</a>
+        </li>
+        <li>
+          <a href="/faq"><i class="fas fa-question-circle"></i> FAQ</a>
+        </li>
+        <li>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+        </li>
+      </ul>
+    </nav>
 
-        <main class="main">
-            <div id="alertModal" class="modal-backdrop" style="display: none;">
-                <div class="modal-content">
-                    <div class="alert-container">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert {{ category }}">
-                                    {% if category == 'success' %}<i class="fas fa-check-circle"></i>{% endif %}
-                                    {% if category == 'error' %}<i class="fas fa-times-circle"></i>{% endif %}
-                                    {% if category == 'info' %}<i class="fas fa-info-circle"></i>{% endif %}
-                                    {{ message }}
-                                    <button class="close-alert-btn">&times;</button> </div>
-                            {% endfor %}
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                </div>
+    <main class="main">
+      <div id="alertModal" class="modal-backdrop" style="display: none">
+        <div class="modal-content">
+          <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %} {%
+            if messages %} {% for category, message in messages %}
+            <div class="alert {{ category }}">
+              {% if category == 'success' %}<i class="fas fa-check-circle"></i
+              >{% endif %} {% if category == 'error' %}<i
+                class="fas fa-times-circle"
+              ></i
+              >{% endif %} {% if category == 'info' %}<i
+                class="fas fa-info-circle"
+              ></i
+              >{% endif %} {{ message }}
+              <button class="close-alert-btn">&times;</button>
             </div>
-            <section class="card dashboard-header">
-                <h1>Bem-vindo, {{ nome_usuario or 'Usuário' }}!</h1>
-                <p>
-                    Seu saldo total simulado:
-                    <strong class="saldo-total-valor"
-                        >R$ {{ '%.2f'|format(saldo_total_simulado or 0) }}</strong
-                    >
-                </p>
-                <p><i class="fas fa-calendar-day"></i> {{ data }}</p>
-            </section>
+            {% endfor %} {% endif %} {% endwith %}
+          </div>
+        </div>
+      </div>
+      <section class="card dashboard-header">
+        <h1>Bem-vindo, {{ nome_usuario or 'Usuário' }}!</h1>
+        <p>
+          Seu saldo total simulado:
+          <strong class="saldo-total-valor"
+            >R$ {{ '%.2f'|format(saldo_total_simulado or 0) }}</strong
+          >
+        </p>
+        <p><i class="fas fa-calendar-day"></i> {{ data }}</p>
+      </section>
 
-           <section id="carteira" class="card">
-                <h3><i class="fas fa-wallet"></i> Minha Carteira Digital</h3>
+      <section id="carteira" class="card">
+        <h3><i class="fas fa-wallet"></i> Minha Carteira Digital</h3>
 
-                <div class="saldo-total">
-                    <h4>Saldo Disponível: R$ {{ "%.2f"|format(saldo_brl) }}</h4>
-                    <button id="btn-toggle-carteira" class="btn-toggle">
-                        <i class="fas fa-eye"></i> Ver Detalhes da Carteira
-                    </button>
-                </div>
-
-        <div id="carteira-detalhes" style="display: none; margin-top: 15px">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alert-container">
-            {% for category, message in messages %}
-                <div class="alert {{ category }}">
-                    {% if category == 'success' %}<i class="fas fa-check-circle"></i>{% endif %}
-                    {% if category == 'error' %}<i class="fas fa-times-circle"></i>{% endif %}
-                    {% if category == 'info' %}<i class="fas fa-info-circle"></i>{% endif %}
-                    {{ message }}
-                    <button class="close-alert-btn">&times;</button>
-                </div>
-            {% endfor %}
-            </div>
-        {% endif %}
-        {% endwith %}
-
-        <div class="operacoes">
-            <h4><i class="fas fa-cash-register"></i> Operações</h4>
-            <form method="POST">
-                <input type="number" step="0.01" name="valor" required />
-                <select name="moeda">
-                    <option value="BRL">BRL</option>
-                </select>
-                <select name="operacao">
-                    <option value="deposito">Depósito</option>
-                    <option value="saque">Saque</option>
-                </select>
-                <button type="submit">Confirmar</button>
-            </form>
+        <div class="saldo-total">
+          <h4>Saldo Disponível: R$ {{ "%.2f"|format(saldo_brl) }}</h4>
+          <button id="btn-toggle-carteira" class="btn-toggle">
+            <i class="fas fa-eye"></i> Ver Detalhes da Carteira
+          </button>
         </div>
 
-        <div class="ativos">
-    <h4><i class="fas fa-cubes"></i> Meus Ativos</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Moeda</th>
-                <th>Quantidade</th>
-                <th>Valor Atual</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for moeda, quantidade in carteira.items() %}
-            <tr>
-                <td>{{ moeda.upper() }}</td>
-                <td>
-                    {% if moeda.upper() == 'BRL' %}
-                        {{ quantidade | format_brl }}
-                    {% else %}
-                        {{ quantidade | format_number(8) }}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if precos is defined and moeda.lower() in precos %}
-                        R$ {{ precos[moeda.lower()] | format_brl }}
-                    {% else %}
-                        Preço indisponível
-                    {% endif %}
-                </td>
-                <td>
-                    {% if precos[moeda.lower()] is defined and precos[moeda.lower()] %}
-                        R$ {{ (quantidade * precos[moeda.lower()]) | format_brl }}
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-            </tr>
+        <div id="carteira-detalhes" style="display: none; margin-top: 15px">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %}
+          <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">
+              {% if category == 'success' %}<i class="fas fa-check-circle"></i
+              >{% endif %} {% if category == 'error' %}<i
+                class="fas fa-times-circle"
+              ></i
+              >{% endif %} {% if category == 'info' %}<i
+                class="fas fa-info-circle"
+              ></i
+              >{% endif %} {{ message }}
+              <button class="close-alert-btn">&times;</button>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
+          </div>
+          {% endif %} {% endwith %}
 
-        <div class="historico">
-    <h4><i class="fas fa-clipboard-list"></i> Histórico de Transações</h4>
-    <table class="tabela-transacoes">
-        <thead>
-            <tr>
-                <th>Tipo</th>
-                <th>Data</th>
-                <th>Valor</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for trans in historico_transacoes_app %}
-            <tr class="transacao-item {{ trans.tipo }}">
-                <td>
+          <div class="operacoes">
+            <h4><i class="fas fa-cash-register"></i> Operações</h4>
+            <form method="POST">
+              <input type="number" step="0.01" name="valor" required />
+              <select name="moeda">
+                <option value="BRL">BRL</option>
+              </select>
+              <select name="operacao">
+                <option value="deposito">Depósito</option>
+                <option value="saque">Saque</option>
+              </select>
+              <button type="submit">Confirmar</button>
+            </form>
+          </div>
+
+          <div class="ativos">
+            <h4><i class="fas fa-cubes"></i> Meus Ativos</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Moeda</th>
+                  <th>Quantidade</th>
+                  <th>Valor Atual</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for moeda, quantidade in carteira.items() %}
+                <tr>
+                  <td>{{ moeda.upper() }}</td>
+                  <td>
+                    {% if moeda.upper() == 'BRL' %} {{ quantidade | format_brl
+                    }} {% else %} {{ quantidade | format_number(8) }} {% endif
+                    %}
+                  </td>
+                  <td>
+                    {% if precos is defined and moeda.lower() in precos %} R$ {{
+                    precos[moeda.lower()] | format_brl }} {% else %} Preço
+                    indisponível {% endif %}
+                  </td>
+                  <td>
+                    {% if precos[moeda.lower()] is defined and
+                    precos[moeda.lower()] %} R$ {{ (quantidade *
+                    precos[moeda.lower()]) | format_brl }} {% else %} - {% endif
+                    %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="historico">
+            <h4>
+              <i class="fas fa-clipboard-list"></i> Histórico de Transações
+            </h4>
+            <table class="tabela-transacoes">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Data</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for trans in historico_transacoes_app %}
+                <tr class="transacao-item {{ trans.tipo }}">
+                  <td>
                     {% if trans.tipo == 'deposito' %}
-                        <i class="fas fa-arrow-circle-down icon-deposito"></i> Depósito
-                    {% elif trans.tipo == 'saque' %}
-                        <i class="fas fa-arrow-circle-up icon-saque"></i> Saque
-                    {% else %}
-                        <i class="fas fa-history"></i> {{ trans.tipo|title }}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if isinstance(trans.data, datetime) or isinstance(trans.data, date) %}
-                        {{ trans.data.strftime('%d/%m/%Y %H:%M') }}
-                    {% else %}
-                        {{ trans.data }}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if trans.moeda.upper() == 'BRL' %}
-                        R$ {{ trans.valor | format_brl }}
-                    {% else %}
-                        {{ trans.valor | format_number(8) }} {{ trans.moeda.upper() }}
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="3">Nenhuma transação registrada</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-    </div>
-</section>
-            <section id="cotacao" class="card">
-                <h3><i class="fas fa-coins"></i> Cotação Atual</h3>
-                <div class="cotacao-grid">
-                    {% for crypto_id, price in precos.items() %}
-                        {% if crypto_id.lower() != 'brl' %}
-                            <div>
-                                <h4>{{ crypto_id.replace('_', ' ')|title }} ({{ crypto_id.upper() }})</h4>
-                                <p>R$ {{ '%.2f'|format(price or 0) }}</p>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <form method="post" class="text-right">
-                    <input type="hidden" name="atualizar_cotacao_all" value="1" />
-                    <button type="submit" class="btn-atualizar">
-                        <i class="fas fa-sync-alt"></i> Atualizar Todas
-                    </button>
-                </form>
-            </section>
+                    <i class="fas fa-arrow-circle-down icon-deposito"></i>
+                    Depósito {% elif trans.tipo == 'saque' %}
+                    <i class="fas fa-arrow-circle-up icon-saque"></i> Saque {%
+                    else %} <i class="fas fa-history"></i> {{ trans.tipo|title
+                    }} {% endif %}
+                  </td>
+                  <td>
+                    {% if isinstance(trans.data, datetime) or
+                    isinstance(trans.data, date) %} {{
+                    trans.data.strftime('%d/%m/%Y %H:%M') }} {% else %} {{
+                    trans.data }} {% endif %}
+                  </td>
+                  <td>
+                    {% if trans.moeda.upper() == 'BRL' %} R$ {{ trans.valor |
+                    format_brl }} {% else %} {{ trans.valor | format_number(8)
+                    }} {{ trans.moeda.upper() }} {% endif %}
+                  </td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="3">Nenhuma transação registrada</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section id="cotacao" class="card">
+        <h3><i class="fas fa-coins"></i> Cotação Atual</h3>
+        <div class="cotacao-grid">
+          {% for crypto_id, price in precos.items() %} {% if crypto_id.lower()
+          != 'brl' %}
+          <div>
+            <h4>
+              {{ crypto_id.replace('_', ' ')|title }} ({{ crypto_id.upper() }})
+            </h4>
+            <p>R$ {{ '%.2f'|format(price or 0) }}</p>
+          </div>
+          {% endif %} {% endfor %}
+        </div>
+        <form method="post" class="text-right">
+          <input type="hidden" name="atualizar_cotacao_all" value="1" />
+          <button type="submit" class="btn-atualizar">
+            <i class="fas fa-sync-alt"></i> Atualizar Todas
+          </button>
+        </form>
+      </section>
 
-            <section id="grafico" class="card">
-                <h3>
-                    <i class="fas fa-chart-line"></i> Gráfico de Preço do {{ cripto |
-                    capitalize }}
-                </h3>
-                <div class="chart-controls">
-                    <form method="post">
-                        <input type="hidden" name="buscar" value="1" />
-                        <label for="cripto">Criptomoeda:</label>
-                        <select name="cripto" id="cripto" onchange="this.form.submit()">
-                            {% for crypto_id, price in precos.items() %}
-                                {% if crypto_id.lower() not in ['brl', 'usd', 'eur'] %}
-                                    <option value="{{ crypto_id }}" {% if cripto == crypto_id %}selected{% endif %}>
-                                        {{ crypto_id.replace('_', ' ')|title }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
+      <section id="grafico" class="card">
+        <h3>
+          <i class="fas fa-chart-line"></i> Gráfico de Preço do {{ cripto |
+          capitalize }}
+        </h3>
+        <div class="chart-controls">
+          <form method="post">
+            <input type="hidden" name="buscar" value="1" />
+            <label for="cripto">Criptomoeda:</label>
+            <select name="cripto" id="cripto" onchange="this.form.submit()">
+              {% for crypto_id, price in precos.items() %} {% if
+              crypto_id.lower() not in ['brl', 'usd', 'eur'] %}
+              <option
+                value="{{ crypto_id }}"
+                {%
+                if
+                cripto=""
+                ="crypto_id"
+                %}selected{%
+                endif
+                %}
+              >
+                {{ crypto_id.replace('_', ' ')|title }}
+              </option>
+              {% endif %} {% endfor %}
+            </select>
 
-                        <label for="periodo">Período:</label>
-                        <select name="periodo" id="periodo">
-                            <option value="7" {% if periodo == '7' %}selected{% endif %}>7 dias</option>
-                            <option value="15" {% if periodo == '15' %}selected{% endif %}>15 dias</option>
-                            <option value="30" {% if periodo == '30' %}selected{% endif %}>30 dias</option>
-                        </select>
+            <label for="periodo">Período:</label>
+            <select name="periodo" id="periodo">
+              <option value="7" {% if periodo="" ="7" %}selected{% endif %}>
+                7 dias
+              </option>
+              <option value="15" {% if periodo="" ="15" %}selected{% endif %}>
+                15 dias
+              </option>
+              <option value="30" {% if periodo="" ="30" %}selected{% endif %}>
+                30 dias
+              </option>
+            </select>
 
-                        <button type="submit">Atualizar</button>
-                    </form>
-                </div>
-                <div class="chart-container">
-                    <canvas id="grafico-canvas"></canvas>
-                </div>
-                <div class="chart-stats">
-                    <span
-                        ><i class="fas fa-arrow-up"></i> Máximo:
-                        <strong id="max-value"
-                            >R$ {{ '%.2f'|format(dados|max or 0) }}</strong
-                        ></span
-                    >
-                    <span
-                        ><i class="fas fa-arrow-down"></i> Mínimo:
-                        <strong id="min-value"
-                            >R$ {{ '%.2f'|format(dados|min or 0) }}</strong
-                        ></span
-                    >
-                    <button onclick="exportChart()" class="btn-export">
-                        <i class="fas fa-download"></i> Exportar Gráfico
-                    </button>
-                </div>
-            </section>
+            <button type="submit">Atualizar</button>
+          </form>
+        </div>
+        <div class="chart-container">
+          <canvas id="grafico-canvas"></canvas>
+        </div>
+        <div class="chart-stats">
+          <span
+            ><i class="fas fa-arrow-up"></i> Máximo:
+            <strong id="max-value"
+              >R$ {{ '%.2f'|format(dados|max or 0) }}</strong
+            ></span
+          >
+          <span
+            ><i class="fas fa-arrow-down"></i> Mínimo:
+            <strong id="min-value"
+              >R$ {{ '%.2f'|format(dados|min or 0) }}</strong
+            ></span
+          >
+          <button onclick="exportChart()" class="btn-export">
+            <i class="fas fa-download"></i> Exportar Gráfico
+          </button>
+        </div>
+      </section>
 
-           <section id="conversor" class="card">
-    <h3><i class="fas fa-exchange-alt"></i> Conversor</h3>
-    <form action="/dashboard" method="post">
-        <label for="valor_conversor">Valor:</label>
-        <input
+      <section id="conversor" class="card">
+        <h3><i class="fas fa-exchange-alt"></i> Conversor</h3>
+        <form action="/dashboard" method="post">
+          <label for="valor_conversor">Valor:</label>
+          <input
             type="number"
             step="any"
             name="valor_conversor"
@@ -300,328 +313,328 @@
             required
             placeholder="Ex: 1.0"
             autocomplete="off"
-        />
+          />
 
-        <label for="de">De:</label>
-        <input
+          <label for="de">De:</label>
+          <input
             type="text"
             name="de"
             id="de"
             required
             placeholder="Ex: BTC"
             autocomplete="off"
-        />
-        
-        <label for="para">Para:</label>
-        <input
+          />
+
+          <label for="para">Para:</label>
+          <input
             type="text"
             name="para"
             id="para"
             required
             placeholder="Ex: BRL"
             autocomplete="off"
-        />
-        
-        <button type="submit" name="converter">Converter</button>
+          />
 
-         {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="alert-container">
-      {% for category, message in messages %}
-        <div class="alert {{ category }}">
-          <i class="fas fa-info-circle"></i> {{ message }}
-          <button class="close-alert-btn" onclick="this.parentElement.remove()">×</button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
+          <button type="submit" name="converter">Converter</button>
 
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %}
+          <div class="alert-container">
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">
+              <i class="fas fa-info-circle"></i> {{ message }}
+              <button
+                class="close-alert-btn"
+                onclick="this.parentElement.remove()"
+              >
+                ×
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %} {% endwith %}
+        </form>
+      </section>
 
-    </form>
-</section>
+      <section id="investir" class="card">
+        <h3><i class="fas fa-piggy-bank"></i> Realizar um Investimento</h3>
+        <p>
+          Saldo disponível para investir:
+          <strong>R$ {{ '%.2f'|format(saldo_brl or 0) }}</strong>
+        </p>
+        <form method="post">
+          <input type="hidden" name="operar" value="1" />
+          <label for="cripto_invest">Criptomoeda:</label>
+          <select name="cripto" id="cripto_invest">
+            {% for crypto_id, price in precos.items() %} {% if crypto_id.lower()
+            not in ['brl', 'usd', 'eur'] %}
+            <option value="{{ crypto_id }}">
+              {{ crypto_id.replace('_', ' ')|title }}
+            </option>
+            {% endif %} {% endfor %}
+          </select>
+          <label for="valor">Valor (R$):</label>
+          <input type="number" name="valor" id="valor" step="0.01" required />
+          <button type="submit" name="investir">
+            <i class="fas fa-plus"></i> Investir
+          </button>
+        </form>
+      </section>
 
+      <section id="ganhos" class="card">
+        <h3><i class="fas fa-chart-bar"></i> Ganhos/Perdas</h3>
+        {% if ganhos %}
+        <ul>
+          {% for g in ganhos %}
+          <li>
+            {{ g.cripto | capitalize }}:
+            <strong style="color: {{ 'green' if g.ganho >= 0 else 'red' }}">
+              R$ {{ '%.2f'|format(g.ganho) }}
+            </strong>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Sem dados de ganhos ainda.</p>
+        {% endif %}
+      </section>
 
-            <section id="investir" class="card">
-                <h3><i class="fas fa-piggy-bank"></i> Realizar um Investimento</h3>
-                <p>
-                    Saldo disponível para investir:
-                    <strong>R$ {{ '%.2f'|format(saldo_brl or 0) }}</strong>
-                </p>
-                <form method="post">
-                    <input type="hidden" name="operar" value="1">
-                    <label for="cripto_invest">Criptomoeda:</label>
-                    <select name="cripto" id="cripto_invest">
-                        {% for crypto_id, price in precos.items() %}
-                            {% if crypto_id.lower() not in ['brl', 'usd', 'eur'] %}
-                                <option value="{{ crypto_id }}">
-                                    {{ crypto_id.replace('_', ' ')|title }}
-                                </option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    <label for="valor">Valor (R$):</label>
-                    <input type="number" name="valor" id="valor" step="0.01" required>
-                    <button type="submit" name="investir"><i class="fas fa-plus"></i> Investir</button>
-                </form>
-            </section>
+      <section id="historico" class="card">
+        <h3><i class="fas fa-history"></i> Histórico de Investimentos</h3>
+        {% if investimentos and investimentos|length > 0 %}
+        <table class="lista-investimentos">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Criptomoeda</th>
+              <th>Valor Investido</th>
+              <th>Preço de Compra</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in investimentos %}
+            <tr>
+              <td>
+                {% if isinstance(item.data, datetime) or isinstance(item.data,
+                date) %} {{ item.data.strftime('%d/%m/%Y') }} {% else %} {{
+                item.data }} {% endif %}
+              </td>
+              <td>{{ item.cripto | capitalize }}</td>
+              <td>R$ {{ '%.2f'|format(item.valor or 0) }}</td>
+              <td>R$ {{ '%.2f'|format(item.preco or 0) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>Você ainda não possui investimentos registrados.</p>
+        {% endif %}
+      </section>
+    </main>
 
-            <section id="ganhos" class="card">
-                <h3><i class="fas fa-chart-bar"></i> Ganhos/Perdas</h3>
-                {% if ganhos %}
-                <ul>
-                    {% for g in ganhos %}
-                    <li>
-                        {{ g.cripto | capitalize }}:
-                        <strong style="color: {{ 'green' if g.ganho >= 0 else 'red' }}">
-                            R$ {{ '%.2f'|format(g.ganho) }}
-                        </strong>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p>Sem dados de ganhos ainda.</p>
-                {% endif %}
-            </section>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      function exportChart() {
+          const canvas = document.getElementById('grafico-canvas');
+          const criptoSelect = document.getElementById('cripto');
 
-            <section id="historico" class="card">
-                <h3><i class="fas fa-history"></i> Histórico de Investimentos</h3>
-                {% if investimentos and investimentos|length > 0 %}
-                <table class="lista-investimentos">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Criptomoeda</th>
-                            <th>Valor Investido</th>
-                            <th>Preço de Compra</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in investimentos %}
-                        <tr>
-                            <td>
-                                {% if isinstance(item.data, datetime) or isinstance(item.data, date) %}
-                                    {{ item.data.strftime('%d/%m/%Y') }}
-                                {% else %}
-                                    {{ item.data }}
-                                {% endif %}
-                            </td>
-                            <td>{{ item.cripto | capitalize }}</td>
-                            <td>R$ {{ '%.2f'|format(item.valor or 0) }}</td>
-                            <td>R$ {{ '%.2f'|format(item.preco or 0) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>Você ainda não possui investimentos registrados.</p>
-                {% endif %}
-            </section>
-        </main>
+          if (!canvas) {
+              console.error("Elemento 'grafico-canvas' não encontrado para exportação.");
+              return;
+          }
+          if (!criptoSelect) {
+              console.error("Elemento 'cripto' não encontrado para nomear o arquivo de exportação.");
+              return;
+          }
 
-       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    function exportChart() {
-        const canvas = document.getElementById('grafico-canvas');
-        const criptoSelect = document.getElementById('cripto');
+          const link = document.createElement('a');
+          const moeda = criptoSelect.options[criptoSelect.selectedIndex].text;
+          link.download = `grafico-${moeda.toLowerCase()}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+      }
 
-        if (!canvas) {
-            console.error("Elemento 'grafico-canvas' não encontrado para exportação.");
-            return;
-        }
-        if (!criptoSelect) {
-            console.error("Elemento 'cripto' não encontrado para nomear o arquivo de exportação.");
-            return;
-        }
+      document.addEventListener("DOMContentLoaded", () => {
+          const hamburger = document.querySelector('.hamburger');
+          const sidebar = document.getElementById('sidebar');
+          const body = document.body;
 
-        const link = document.createElement('a');
-        const moeda = criptoSelect.options[criptoSelect.selectedIndex].text;
-        link.download = `grafico-${moeda.toLowerCase()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    }
+          // Lógica do menu Hamburger
+          if (hamburger && sidebar) {
+              hamburger.addEventListener('click', () => {
+                  const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+                  hamburger.setAttribute('aria-expanded', String(!expanded)); // Atributos são strings
+                  sidebar.classList.toggle('active');
+                  body.classList.toggle('sidebar-open');
+              });
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const hamburger = document.querySelector('.hamburger');
-        const sidebar = document.getElementById('sidebar');
-        const body = document.body;
+              sidebar.querySelectorAll('a').forEach(link => {
+                  link.addEventListener('click', () => {
+                      if (window.innerWidth <= 768 && sidebar.classList.contains('active')) { // Checa se sidebar está ativa
+                          sidebar.classList.remove('active');
+                          hamburger.setAttribute('aria-expanded', 'false');
+                          body.classList.remove('sidebar-open');
+                      }
+                  });
+              });
 
-        // Lógica do menu Hamburger
-        if (hamburger && sidebar) {
-            hamburger.addEventListener('click', () => {
-                const expanded = hamburger.getAttribute('aria-expanded') === 'true';
-                hamburger.setAttribute('aria-expanded', String(!expanded)); // Atributos são strings
-                sidebar.classList.toggle('active');
-                body.classList.toggle('sidebar-open');
-            });
+              body.addEventListener('click', (event) => {
+                  if (body.classList.contains('sidebar-open') && sidebar.classList.contains('active') &&
+                      !sidebar.contains(event.target) && !hamburger.contains(event.target)) {
+                      sidebar.classList.remove('active');
+                      hamburger.setAttribute('aria-expanded', 'false');
+                      body.classList.remove('sidebar-open');
+                  }
+              });
+          } else {
+              if (!hamburger) console.warn("AVISO: Elemento '.hamburger' não encontrado.");
+              if (!sidebar) console.warn("AVISO: Elemento '#sidebar' não encontrado.");
+          }
 
-            sidebar.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768 && sidebar.classList.contains('active')) { // Checa se sidebar está ativa
-                        sidebar.classList.remove('active');
-                        hamburger.setAttribute('aria-expanded', 'false');
-                        body.classList.remove('sidebar-open');
-                    }
-                });
-            });
+          // Lógica de mudança de Operação
+          const operacaoSelect = document.getElementById('operacao');
+          if (operacaoSelect) {
+              operacaoSelect.addEventListener('change', function() {
+                  const criptoGroup = document.getElementById('cripto-group');
+                  if (criptoGroup) {
+                      criptoGroup.style.display = this.value === 'compra_cripto' ? 'block' : 'none';
+                  } else {
+                      console.warn("AVISO: Elemento '#cripto-group' não encontrado para a lógica de operação.");
+                  }
+              });
+              // Para definir o estado inicial baseado no valor selecionado ao carregar a página:
+              // if (document.readyState === 'complete' || document.readyState === 'interactive') {
+              //    operacaoSelect.dispatchEvent(new Event('change'));
+              // } else {
+              //    operacaoSelect.addEventListener('load', () => operacaoSelect.dispatchEvent(new Event('change')));
+              // }
+          } else {
+              // console.warn("AVISO: Elemento '#operacao' não encontrado.");
+          }
 
-            body.addEventListener('click', (event) => {
-                if (body.classList.contains('sidebar-open') && sidebar.classList.contains('active') &&
-                    !sidebar.contains(event.target) && !hamburger.contains(event.target)) {
-                    sidebar.classList.remove('active');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                    body.classList.remove('sidebar-open');
-                }
-            });
-        } else {
-            if (!hamburger) console.warn("AVISO: Elemento '.hamburger' não encontrado.");
-            if (!sidebar) console.warn("AVISO: Elemento '#sidebar' não encontrado.");
-        }
+          // Lógica do Gráfico
+          const canvasElement = document.getElementById('grafico-canvas');
+          const criptoSelectForChart = document.getElementById('cripto');
 
-        // Lógica de mudança de Operação
-        const operacaoSelect = document.getElementById('operacao');
-        if (operacaoSelect) {
-            operacaoSelect.addEventListener('change', function() {
-                const criptoGroup = document.getElementById('cripto-group');
-                if (criptoGroup) {
-                    criptoGroup.style.display = this.value === 'compra_cripto' ? 'block' : 'none';
-                } else {
-                    console.warn("AVISO: Elemento '#cripto-group' não encontrado para a lógica de operação.");
-                }
-            });
-            // Para definir o estado inicial baseado no valor selecionado ao carregar a página:
-            // if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            //    operacaoSelect.dispatchEvent(new Event('change'));
-            // } else {
-            //    operacaoSelect.addEventListener('load', () => operacaoSelect.dispatchEvent(new Event('change')));
-            // }
-        } else {
-            // console.warn("AVISO: Elemento '#operacao' não encontrado.");
-        }
-        
-        // Lógica do Gráfico
-        const canvasElement = document.getElementById('grafico-canvas');
-        const criptoSelectForChart = document.getElementById('cripto');
+          if (canvasElement && typeof Chart !== 'undefined' && criptoSelectForChart) {
+              try {
+                  const ctx = canvasElement.getContext('2d');
+                  const labels = {{ labels | default('[]') | tojson }};
+                  const dados = {{ dados | default('[]') | tojson }};
 
-        if (canvasElement && typeof Chart !== 'undefined' && criptoSelectForChart) {
-            try {
-                const ctx = canvasElement.getContext('2d');
-                const labels = {{ labels | default('[]') | tojson }};
-                const dados = {{ dados | default('[]') | tojson }};
-                
-                const chartLabels = Array.isArray(labels) ? labels : [];
-                const chartData = Array.isArray(dados) ? dados : [];
+                  const chartLabels = Array.isArray(labels) ? labels : [];
+                  const chartData = Array.isArray(dados) ? dados : [];
 
-                const moedaSelecionada = criptoSelectForChart.options[criptoSelectForChart.selectedIndex].text;
+                  const moedaSelecionada = criptoSelectForChart.options[criptoSelectForChart.selectedIndex].text;
 
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: chartLabels,
-                        datasets: [{
-                            label: `Preço do ${moedaSelecionada} (R$)`,
-                            data: chartData,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `R$ ${typeof context.parsed.y === 'number' ? context.parsed.y.toFixed(2) : 'N/A'}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                ticks: {
-                                    callback: function(value) {
-                                        return 'R$ ' + (typeof value === 'number' ? value.toFixed(2) : 'N/A');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error("Erro ao inicializar o gráfico:", error);
-            }
-        } else {
-            if (!canvasElement) console.warn("AVISO: Elemento '#grafico-canvas' não encontrado para o gráfico.");
-            if (typeof Chart === 'undefined' && canvasElement) console.error("ERRO: Chart.js não está carregado, mas o canvas do gráfico existe.");
-            if (!criptoSelectForChart && canvasElement) console.warn("AVISO: Elemento select '#cripto' não encontrado para o gráfico.");
-        }
+                  new Chart(ctx, {
+                      type: 'line',
+                      data: {
+                          labels: chartLabels,
+                          datasets: [{
+                              label: `Preço do ${moedaSelecionada} (R$)`,
+                              data: chartData,
+                              borderColor: 'rgba(75, 192, 192, 1)',
+                              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                              borderWidth: 2,
+                              tension: 0.3,
+                              fill: true
+                          }]
+                      },
+                      options: {
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                              tooltip: {
+                                  callbacks: {
+                                      label: function(context) {
+                                          return `R$ ${typeof context.parsed.y === 'number' ? context.parsed.y.toFixed(2) : 'N/A'}`;
+                                      }
+                                  }
+                              }
+                          },
+                          scales: {
+                              y: {
+                                  beginAtZero: false,
+                                  ticks: {
+                                      callback: function(value) {
+                                          return 'R$ ' + (typeof value === 'number' ? value.toFixed(2) : 'N/A');
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  });
+              } catch (error) {
+                  console.error("Erro ao inicializar o gráfico:", error);
+              }
+          } else {
+              if (!canvasElement) console.warn("AVISO: Elemento '#grafico-canvas' não encontrado para o gráfico.");
+              if (typeof Chart === 'undefined' && canvasElement) console.error("ERRO: Chart.js não está carregado, mas o canvas do gráfico existe.");
+              if (!criptoSelectForChart && canvasElement) console.warn("AVISO: Elemento select '#cripto' não encontrado para o gráfico.");
+          }
 
-        // Lógica de toggle da Carteira
-        const btnToggleCarteira = document.getElementById("btn-toggle-carteira");
-        const carteiraDetalhesDiv = document.getElementById("carteira-detalhes");
+          // Lógica de toggle da Carteira
+          const btnToggleCarteira = document.getElementById("btn-toggle-carteira");
+          const carteiraDetalhesDiv = document.getElementById("carteira-detalhes");
 
-        if (btnToggleCarteira && carteiraDetalhesDiv) {
-            btnToggleCarteira.addEventListener("click", () => {
-                const isVisible = carteiraDetalhesDiv.style.display === "block";
-                carteiraDetalhesDiv.style.display = isVisible ? "none" : "block";
-                btnToggleCarteira.innerHTML = isVisible
-                    ? '<i class="fas fa-eye"></i> Ver Detalhes da Carteira'
-                    : '<i class="fas fa-eye-slash"></i> Ocultar Detalhes da Carteira';
-            });
-        } else {
-            if (!btnToggleCarteira) {
-                console.warn("AVISO: Botão '#btn-toggle-carteira' não encontrado.");
-            }
-            if (!carteiraDetalhesDiv) {
-                console.warn("AVISO: Div '#carteira-detalhes' não encontrado.");
-            }
-        }
+          if (btnToggleCarteira && carteiraDetalhesDiv) {
+              btnToggleCarteira.addEventListener("click", () => {
+                  const isVisible = carteiraDetalhesDiv.style.display === "block";
+                  carteiraDetalhesDiv.style.display = isVisible ? "none" : "block";
+                  btnToggleCarteira.innerHTML = isVisible
+                      ? '<i class="fas fa-eye"></i> Ver Detalhes da Carteira'
+                      : '<i class="fas fa-eye-slash"></i> Ocultar Detalhes da Carteira';
+              });
+          } else {
+              if (!btnToggleCarteira) {
+                  console.warn("AVISO: Botão '#btn-toggle-carteira' não encontrado.");
+              }
+              if (!carteiraDetalhesDiv) {
+                  console.warn("AVISO: Div '#carteira-detalhes' não encontrado.");
+              }
+          }
 
-        // Lógica dos Alertas
-        const alertModal = document.getElementById('alertModal');
-        const alertsContainer = document.querySelector('.alert-container');
+          // Lógica dos Alertas
+          const alertModal = document.getElementById('alertModal');
+          const alertsContainer = document.querySelector('.alert-container');
 
-        if (alertsContainer && alertModal) {
-            const alerts = alertsContainer.querySelectorAll('.alert');
+          if (alertsContainer && alertModal) {
+              const alerts = alertsContainer.querySelectorAll('.alert');
 
-            if (alerts.length > 0) {
-                alertModal.style.display = 'flex';
+              if (alerts.length > 0) {
+                  alertModal.style.display = 'flex';
 
-                alerts.forEach(alert => {
-                    const closeBtn = alert.querySelector('.close-alert-btn');
-                    if (closeBtn) {
-                        closeBtn.addEventListener('click', () => {
-                            alert.remove();
-                            if (alertsContainer.querySelectorAll('.alert').length === 0) {
-                                alertModal.style.display = 'none';
-                            }
-                        });
-                    }
-                    
-                    setTimeout(() => {
-                        alert.remove();
-                        if (alertsContainer.querySelectorAll('.alert').length === 0) {
-                            alertModal.style.display = 'none';
-                        }
-                    }, 5000);
-                });
+                  alerts.forEach(alert => {
+                      const closeBtn = alert.querySelector('.close-alert-btn');
+                      if (closeBtn) {
+                          closeBtn.addEventListener('click', () => {
+                              alert.remove();
+                              if (alertsContainer.querySelectorAll('.alert').length === 0) {
+                                  alertModal.style.display = 'none';
+                              }
+                          });
+                      }
 
-                alertModal.addEventListener('click', (event) => {
-                    if (event.target === alertModal) {
-                        alertModal.style.display = 'none';
-                        alertsContainer.querySelectorAll('.alert').forEach(alert => alert.remove());
-                    }
-                });
-            }
-        } else {
-            // console.warn("AVISO: '.alert-container' ou '#alertModal' não encontrados.");
-        }
-    });
-</script>
-    </body>
+                      setTimeout(() => {
+                          alert.remove();
+                          if (alertsContainer.querySelectorAll('.alert').length === 0) {
+                              alertModal.style.display = 'none';
+                          }
+                      }, 5000);
+                  });
+
+                  alertModal.addEventListener('click', (event) => {
+                      if (event.target === alertModal) {
+                          alertModal.style.display = 'none';
+                          alertsContainer.querySelectorAll('.alert').forEach(alert => alert.remove());
+                      }
+                  });
+              }
+          } else {
+              // console.warn("AVISO: '.alert-container' ou '#alertModal' não encontrados.");
+          }
+      });
+    </script>
+  </body>
 </html>

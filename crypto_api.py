@@ -44,7 +44,6 @@ def get_crypto_price(cripto_id: str, vs_currency: str = "brl") -> Optional[float
         return preco
     except requests.exceptions.RequestException as e:
         print(f"[Erro] Falha na API, usando preço simulado para {cripto_id}: {e}")
-        # 🔥 Preços simulados de fallback
         precos_simulados = {
             'bitcoin': 600000,
             'ethereum': 15000,
@@ -63,7 +62,6 @@ def get_crypto_price(cripto_id: str, vs_currency: str = "brl") -> Optional[float
         return precos_simulados.get(cg_crypto_id, 100)  # valor padrão se não encontrar
     except Exception as e:
         print(f"[Erro] Erro inesperado ao buscar preço de {cripto_id}: {e}")
-        # Mesmo fallback para erro geral
         precos_simulados = {
             'bitcoin': 600000,
             'ethereum': 15000,
@@ -111,7 +109,7 @@ def get_price_history(cripto_id: str, dias: int = 7, moeda: str = "brl") -> List
         lista_precos = []
 
         for item in dados.get('prices', []):
-            timestamp = item[0] / 1000  # Converter timestamp de milissegundos para segundos
+            timestamp = item[0] / 1000 
             data_formatada = datetime.fromtimestamp(timestamp).strftime('%d/%m') # Formato DD/MM
             preco = round(item[1], 2)
             lista_precos.append({'data': data_formatada, 'preco': preco})
@@ -119,10 +117,10 @@ def get_price_history(cripto_id: str, dias: int = 7, moeda: str = "brl") -> List
         return lista_precos
     except requests.exceptions.RequestException as e:
         print(f"[Erro] Falha ao buscar histórico de {cripto_id}: {e}")
-        raise e # Relança a exceção
+        raise e 
     except Exception as e:
         print(f"[Erro] Erro inesperado ao buscar histórico de {cripto_id}: {e}")
-        raise e # Relança a exceção
+        raise e 
 
 
 def converter_crypto(from_id: str, to_id: str, testar: bool = False) -> Optional[float]:
@@ -234,13 +232,13 @@ def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tup
     try:
         url = f'{BASE_URL_COINGECKO}/coins/{cg_cripto_id}/market_chart'
         params = {
-            'vs_currency': 'brl', # Moeda de comparação para o histórico
+            'vs_currency': 'brl', 
             'days': days,
-            'interval': 'daily' # Garante um ponto de dados por dia para períodos maiores
+            'interval': 'daily'
         }
 
         resposta = requests.get(url, params=params, timeout=5)
-        resposta.raise_for_status() # Levanta um HTTPError para 4xx/5xx responses
+        resposta.raise_for_status()
         dados = resposta.json()
         precos = dados.get('prices', [])
 
@@ -248,18 +246,14 @@ def obter_historico_coingecko(cripto_id: str = 'bitcoin', days: int = 30) -> Tup
         valores = []
 
         for timestamp, valor_preco in precos:
-            # Converte o timestamp (em milissegundos) para um objeto datetime
-            # e depois formata para DD/MM.
             data = datetime.fromtimestamp(timestamp / 1000).strftime('%d/%m')
             labels.append(data)
             valores.append(round(valor_preco, 2))
 
         return labels, valores
     except requests.exceptions.RequestException as e:
-        # Captura erros de requisição (incluindo HTTPError para 429) e relança.
         print(f"[Erro] Falha ao obter histórico do CoinGecko para {cripto_id}: {e}")
-        raise e # Relança a exceção
+        raise e 
     except Exception as e:
-        # Captura outros erros inesperados e relança.
         print(f"[Erro] Erro inesperado ao obter histórico do CoinGecko para {cripto_id}: {e}")
-        raise e # Relança a exceção
+        raise e 

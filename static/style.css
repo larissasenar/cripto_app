@@ -72,7 +72,9 @@ body:not(.sidebar-open)::before {
   gap: 8px;
   padding: 8px 0;
   border-radius: 4px;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .sidebar ul li a:hover,
@@ -107,7 +109,9 @@ body:not(.sidebar-open)::before {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
   margin-bottom: 20px;
 }
 
@@ -186,7 +190,9 @@ select {
   background-color: #0d1117;
   color: #c9d1d9;
   font-size: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
   width: 100%;
   box-sizing: border-box;
 }
@@ -211,7 +217,10 @@ button[type="submit"],
   cursor: pointer;
   font-weight: bold;
   font-size: 16px;
-  transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s,
+    transform 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -399,7 +408,9 @@ ul {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.3s, transform 0.2s;
+  transition:
+    background 0.3s,
+    transform 0.2s;
   border: 1px solid #30363d;
 }
 
@@ -452,7 +463,10 @@ ul {
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.2s;
   margin-top: 40px;
   text-align: center;
 }
@@ -506,7 +520,10 @@ ul {
   border: none;
   box-shadow: 0 6px 15px rgba(0, 200, 150, 0.5);
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s,
+    box-shadow 0.3s;
   z-index: 999;
 }
 
@@ -574,7 +591,9 @@ ul {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s, transform 0.2s;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -682,47 +701,45 @@ ul {
 .historico .tabela-transacoes {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px; /* Ajustado para um espaçamento mais uniforme */
-  background-color: #161b22; /* Cor de fundo similar aos cards */
-  border-radius: 8px; /* Bordas arredondadas */
-  overflow: hidden; /* Garante que as bordas arredondadas sejam aplicadas ao conteúdo */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra para profundidade */
+  margin-top: 15px;
+  background-color: #161b22;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .historico .tabela-transacoes th,
 .historico .tabela-transacoes td {
-  padding: 12px 15px; /* Espaçamento interno das células */
+  padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #30363d; /* Cor da borda similar a outros elementos */
-  color: #c9d1d9; /* Cor do texto padrão */
+  border-bottom: 1px solid #30363d;
+  color: #c9d1d9;
 }
 
 .historico .tabela-transacoes th {
-  background-color: #0d1117; /* Cor de fundo para o cabeçalho */
-  color: #00c896; /* Cor do texto do cabeçalho */
+  background-color: #0d1117;
+  color: #00c896;
   font-weight: bold;
-  text-transform: uppercase; /* Texto em maiúsculas para o cabeçalho */
+  text-transform: uppercase;
   font-size: 0.9em;
 }
 
 .historico .tabela-transacoes tr:hover {
-  background-color: #21262d; /* Cor de fundo ao passar o mouse */
+  background-color: #21262d;
 }
 
-/* Estilos para os ícones dentro da tabela */
 .historico .tabela-transacoes .icon-deposito {
-  color: #00c896; /* Verde para depósitos */
+  color: #00c896;
 }
 
 .historico .tabela-transacoes .icon-saque {
-  color: #ff6b6b; /* Vermelho para saques */
+  color: #ff6b6b;
 }
 
 .historico .tabela-transacoes td i {
-  margin-right: 5px; /* Espaçamento entre ícone e texto */
+  margin-right: 5px;
 }
 
-/* Estilo para a mensagem de "Nenhuma transação registrada" */
 .historico .tabela-transacoes tr td[colspan="3"] {
   text-align: center;
   font-style: italic;
@@ -952,7 +969,9 @@ ul {
 .social-links a {
   color: #c9d1d9;
   font-size: 1.8em;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.2s ease;
 }
 
 .social-links a:hover {
@@ -1194,16 +1213,16 @@ ul {
   }
 
   .historico .tabela-transacoes {
-    display: block; /* Permite scroll horizontal em telas menores */
+    display: block;
     overflow-x: auto;
-    white-space: nowrap; /* Impede a quebra de linha do conteúdo da célula */
-    -webkit-overflow-scrolling: touch; /* Suaviza o scroll em dispositivos iOS */
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
   }
 
   .historico .tabela-transacoes th,
   .historico .tabela-transacoes td {
-    white-space: nowrap; /* Garante que o conteúdo não quebre linha */
-    padding: 10px 12px; /* Ajusta o padding para telas menores */
+    white-space: nowrap;
+    padding: 10px 12px;
   }
 }
 
