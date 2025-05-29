@@ -288,40 +288,59 @@
                 </div>
             </section>
 
-            <section id="conversor" class="card">
-                <h3><i class="fas fa-exchange-alt"></i> Conversor</h3>
-                <form action="/dashboard" method="post">
-                    <label for="valor_conversor">Valor:</label>
-                    <input
-                        type="number"
-                        step="any"
-                        name="valor_conversor"
-                        id="valor_conversor"
-                        required
-                        placeholder="Ex: 1.0"
-                    />
+           <section id="conversor" class="card">
+    <h3><i class="fas fa-exchange-alt"></i> Conversor</h3>
+    <form action="/dashboard" method="post">
+        <label for="valor_conversor">Valor:</label>
+        <input
+            type="number"
+            step="any"
+            name="valor_conversor"
+            id="valor_conversor"
+            required
+            placeholder="Ex: 1.0"
+            autocomplete="off"
+        />
 
-                    <label for="de">De:</label>
-                    <input
-                        type="text"
-                        name="de"
-                        id="de"
-                        required
-                        placeholder="Ex: BTC,ETH,LTC"
-                    />
-                    
-                    <label for="para">Para:</label>
-                    <input
-                        type="text"
-                        name="para"
-                        id="para"
-                        required
-                        placeholder="Ex: BRL"
-                    />
-                    
-                    <button type="submit" name="converter">Converter</button>
-                </form>
-            </section>
+        <label for="de">De:</label>
+        <input
+            type="text"
+            name="de"
+            id="de"
+            required
+            placeholder="Ex: BTC"
+            autocomplete="off"
+        />
+        
+        <label for="para">Para:</label>
+        <input
+            type="text"
+            name="para"
+            id="para"
+            required
+            placeholder="Ex: BRL"
+            autocomplete="off"
+        />
+        
+        <button type="submit" name="converter">Converter</button>
+
+         {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="alert-container">
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">
+          <i class="fas fa-info-circle"></i> {{ message }}
+          <button class="close-alert-btn" onclick="this.parentElement.remove()">×</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+    </form>
+</section>
+
 
             <section id="investir" class="card">
                 <h3><i class="fas fa-piggy-bank"></i> Realizar um Investimento</h3>
@@ -400,64 +419,108 @@
             </section>
         </main>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            function exportChart() {
-                const canvas = document.getElementById('grafico-canvas');
-                const link = document.createElement('a');
-                const moeda = document.getElementById('cripto').options[document.getElementById('cripto').selectedIndex].text;
-                link.download = `grafico-${moeda.toLowerCase()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }
+       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function exportChart() {
+        const canvas = document.getElementById('grafico-canvas');
+        const criptoSelect = document.getElementById('cripto');
 
-            document.addEventListener("DOMContentLoaded", () => {
-                const hamburger = document.querySelector('.hamburger');
-                const sidebar = document.getElementById('sidebar');
-                const body = document.body;
+        if (!canvas) {
+            console.error("Elemento 'grafico-canvas' não encontrado para exportação.");
+            return;
+        }
+        if (!criptoSelect) {
+            console.error("Elemento 'cripto' não encontrado para nomear o arquivo de exportação.");
+            return;
+        }
 
-                hamburger.addEventListener('click', () => {
-                    const expanded = hamburger.getAttribute('aria-expanded') === 'true';
-                    hamburger.setAttribute('aria-expanded', !expanded);
-                    sidebar.classList.toggle('active');
-                    body.classList.toggle('sidebar-open');
-                });
+        const link = document.createElement('a');
+        const moeda = criptoSelect.options[criptoSelect.selectedIndex].text;
+        link.download = `grafico-${moeda.toLowerCase()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
 
-                sidebar.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        if (window.innerWidth <= 768) {
-                            sidebar.classList.remove('active');
-                            hamburger.setAttribute('aria-expanded', false);
-                            body.classList.remove('sidebar-open');
-                        }
-                    });
-                });
+    document.addEventListener("DOMContentLoaded", () => {
+        const hamburger = document.querySelector('.hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
 
-                body.addEventListener('click', (event) => {
-                    if (body.classList.contains('sidebar-open') && !sidebar.contains(event.target) && !hamburger.contains(event.target)) {
+        // Lógica do menu Hamburger
+        if (hamburger && sidebar) {
+            hamburger.addEventListener('click', () => {
+                const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+                hamburger.setAttribute('aria-expanded', String(!expanded)); // Atributos são strings
+                sidebar.classList.toggle('active');
+                body.classList.toggle('sidebar-open');
+            });
+
+            sidebar.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768 && sidebar.classList.contains('active')) { // Checa se sidebar está ativa
                         sidebar.classList.remove('active');
-                        hamburger.setAttribute('aria-expanded', false);
+                        hamburger.setAttribute('aria-expanded', 'false');
                         body.classList.remove('sidebar-open');
                     }
                 });
+            });
 
-                document.getElementById('operacao')?.addEventListener('change', function() {
-                    const criptoGroup = document.getElementById('cripto-group');
+            body.addEventListener('click', (event) => {
+                if (body.classList.contains('sidebar-open') && sidebar.classList.contains('active') &&
+                    !sidebar.contains(event.target) && !hamburger.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                    body.classList.remove('sidebar-open');
+                }
+            });
+        } else {
+            if (!hamburger) console.warn("AVISO: Elemento '.hamburger' não encontrado.");
+            if (!sidebar) console.warn("AVISO: Elemento '#sidebar' não encontrado.");
+        }
+
+        // Lógica de mudança de Operação
+        const operacaoSelect = document.getElementById('operacao');
+        if (operacaoSelect) {
+            operacaoSelect.addEventListener('change', function() {
+                const criptoGroup = document.getElementById('cripto-group');
+                if (criptoGroup) {
                     criptoGroup.style.display = this.value === 'compra_cripto' ? 'block' : 'none';
-                });
+                } else {
+                    console.warn("AVISO: Elemento '#cripto-group' não encontrado para a lógica de operação.");
+                }
+            });
+            // Para definir o estado inicial baseado no valor selecionado ao carregar a página:
+            // if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            //    operacaoSelect.dispatchEvent(new Event('change'));
+            // } else {
+            //    operacaoSelect.addEventListener('load', () => operacaoSelect.dispatchEvent(new Event('change')));
+            // }
+        } else {
+            // console.warn("AVISO: Elemento '#operacao' não encontrado.");
+        }
+        
+        // Lógica do Gráfico
+        const canvasElement = document.getElementById('grafico-canvas');
+        const criptoSelectForChart = document.getElementById('cripto');
 
-                const ctx = document.getElementById('grafico-canvas').getContext('2d');
-                const labels = {{ labels | tojson }};
-                const dados = {{ dados | tojson }};
-                const moedaSelecionada = document.getElementById('cripto').options[document.getElementById('cripto').selectedIndex].text;
+        if (canvasElement && typeof Chart !== 'undefined' && criptoSelectForChart) {
+            try {
+                const ctx = canvasElement.getContext('2d');
+                const labels = {{ labels | default('[]') | tojson }};
+                const dados = {{ dados | default('[]') | tojson }};
+                
+                const chartLabels = Array.isArray(labels) ? labels : [];
+                const chartData = Array.isArray(dados) ? dados : [];
+
+                const moedaSelecionada = criptoSelectForChart.options[criptoSelectForChart.selectedIndex].text;
 
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: labels,
+                        labels: chartLabels,
                         datasets: [{
                             label: `Preço do ${moedaSelecionada} (R$)`,
-                            data: dados,
+                            data: chartData,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderWidth: 2,
@@ -472,7 +535,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return `R$ ${context.parsed.y.toFixed(2)}`;
+                                        return `R$ ${typeof context.parsed.y === 'number' ? context.parsed.y.toFixed(2) : 'N/A'}`;
                                     }
                                 }
                             }
@@ -482,59 +545,83 @@
                                 beginAtZero: false,
                                 ticks: {
                                     callback: function(value) {
-                                        return 'R$ ' + value.toFixed(2);
+                                        return 'R$ ' + (typeof value === 'number' ? value.toFixed(2) : 'N/A');
                                     }
                                 }
                             }
                         }
                     }
                 });
+            } catch (error) {
+                console.error("Erro ao inicializar o gráfico:", error);
+            }
+        } else {
+            if (!canvasElement) console.warn("AVISO: Elemento '#grafico-canvas' não encontrado para o gráfico.");
+            if (typeof Chart === 'undefined' && canvasElement) console.error("ERRO: Chart.js não está carregado, mas o canvas do gráfico existe.");
+            if (!criptoSelectForChart && canvasElement) console.warn("AVISO: Elemento select '#cripto' não encontrado para o gráfico.");
+        }
 
-                const btn = document.getElementById("btn-toggle-carteira");
-                const carteiraDetalhes = document.getElementById("carteira-detalhes");
+        // Lógica de toggle da Carteira
+        const btnToggleCarteira = document.getElementById("btn-toggle-carteira");
+        const carteiraDetalhesDiv = document.getElementById("carteira-detalhes");
 
-                btn.addEventListener("click", () => {
-                    const isVisible = carteiraDetalhes.style.display === "block";
-                    carteiraDetalhes.style.display = isVisible ? "none" : "block";
-                    btn.innerHTML = isVisible
-                        ? '<i class="fas fa-eye"></i> Ver Detalhes da Carteira'
-                        : '<i class="fas fa-eye-slash"></i> Ocultar Detalhes da Carteira';
-                });
+        if (btnToggleCarteira && carteiraDetalhesDiv) {
+            btnToggleCarteira.addEventListener("click", () => {
+                const isVisible = carteiraDetalhesDiv.style.display === "block";
+                carteiraDetalhesDiv.style.display = isVisible ? "none" : "block";
+                btnToggleCarteira.innerHTML = isVisible
+                    ? '<i class="fas fa-eye"></i> Ver Detalhes da Carteira'
+                    : '<i class="fas fa-eye-slash"></i> Ocultar Detalhes da Carteira';
+            });
+        } else {
+            if (!btnToggleCarteira) {
+                console.warn("AVISO: Botão '#btn-toggle-carteira' não encontrado.");
+            }
+            if (!carteiraDetalhesDiv) {
+                console.warn("AVISO: Div '#carteira-detalhes' não encontrado.");
+            }
+        }
 
-                const alertModal = document.getElementById('alertModal');
-                const alerts = document.querySelectorAll('.alert-container .alert');
+        // Lógica dos Alertas
+        const alertModal = document.getElementById('alertModal');
+        const alertsContainer = document.querySelector('.alert-container');
 
-                if (alerts.length > 0) {
-                    alertModal.style.display = 'flex';
+        if (alertsContainer && alertModal) {
+            const alerts = alertsContainer.querySelectorAll('.alert');
 
-                    alerts.forEach(alert => {
-                        const closeBtn = alert.querySelector('.close-alert-btn');
-                        if (closeBtn) {
-                            closeBtn.addEventListener('click', () => {
-                                alert.remove();
-                                if (document.querySelectorAll('.alert-container .alert').length === 0) {
-                                    alertModal.style.display = 'none';
-                                }
-                            });
-                        }
-                        
-                        setTimeout(() => {
+            if (alerts.length > 0) {
+                alertModal.style.display = 'flex';
+
+                alerts.forEach(alert => {
+                    const closeBtn = alert.querySelector('.close-alert-btn');
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
                             alert.remove();
-                            if (document.querySelectorAll('.alert-container .alert').length === 0) {
+                            if (alertsContainer.querySelectorAll('.alert').length === 0) {
                                 alertModal.style.display = 'none';
                             }
-                        }, 5000);
-                    });
-
+                        });
+                    }
                     
-                    alertModal.addEventListener('click', (event) => {
-                        if (event.target === alertModal) {
+                    setTimeout(() => {
+                        alert.remove();
+                        if (alertsContainer.querySelectorAll('.alert').length === 0) {
                             alertModal.style.display = 'none';
-                            alerts.forEach(alert => alert.remove()); // Also clear all alerts
                         }
-                    });
-                }
-            });
-        </script>
+                    }, 5000);
+                });
+
+                alertModal.addEventListener('click', (event) => {
+                    if (event.target === alertModal) {
+                        alertModal.style.display = 'none';
+                        alertsContainer.querySelectorAll('.alert').forEach(alert => alert.remove());
+                    }
+                });
+            }
+        } else {
+            // console.warn("AVISO: '.alert-container' ou '#alertModal' não encontrados.");
+        }
+    });
+</script>
     </body>
 </html>
