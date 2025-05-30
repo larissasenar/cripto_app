@@ -1,6 +1,5 @@
 from flask import Flask, flash, render_template, request, redirect, session, url_for, get_flashed_messages
 from datetime import datetime, timedelta, date
-import time # Import não utilizado diretamente no código fornecido, mas mantido.
 import requests
 import os
 
@@ -19,7 +18,6 @@ from database import (
 
 from crypto_api import (
     get_crypto_price,
-    get_price_history, # Import não utilizado diretamente no código fornecido, mas mantido.
     converter_crypto,
     obter_historico_coingecko
 )
@@ -27,52 +25,28 @@ from crypto_api import (
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta_aqui'
 
-app.jinja_env.cache = {}
+app.jinja_env.cache = {} # Desabilita o cache Jinja, útil para desenvolvimento
 
-<<<<<<< HEAD
+
 @app.template_filter('format_number')
 def format_number_filter(value, max_decimals=6):
     if value is None:
         return ""
-    try: # Adicionado try-except para robustez
+    try:
         num = float(value)
         formatted = f"{num:.{max_decimals}f}"
+        # Remove zeros à direita e o ponto decimal se não houver parte fracionária
         return formatted.rstrip('0').rstrip('.') if '.' in formatted else formatted
     except (ValueError, TypeError):
         return str(value) # Retorna o valor original se não puder converter para float
 
 @app.template_filter('format_brl')
-=======
-# NOVO FILTRO PERSONALIZADO PARA FORMATAR NÚMEROS
-def format_number_filter(value, max_decimals=6):
-    try:
-        if value is None:
-            return ""
-        num = float(value)
-        formatted = f"{num:.{max_decimals}f}"
-        return formatted.rstrip('0').rstrip('.') if '.' in formatted else formatted
-    except Exception:
-        return value # Retorna o original se não for possível converter
-
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
 def format_brl_filter(value):
     try:
         return f"{float(value):.2f}"
-    except Exception:
-        return "0.00"
-<<<<<<< HEAD
-    try: # Adicionado try-except para robustez
-        return f"{float(value):.2f}"
     except (ValueError, TypeError):
         return "0.00" # Retorna padrão se não puder converter
-=======
 
-# --- CORREÇÃO: Registrar os filtros no ambiente Jinja2 da aplicação ---
-app.jinja_env.filters['format_number'] = format_number_filter
-app.jinja_env.filters['format_brl'] = format_brl_filter
-# --- FIM DA CORREÇÃO ---
-
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
 
 print(f"DEBUG: Diretório de trabalho atual: {os.getcwd()}")
 print(f"DEBUG: Caminho esperado do banco de dados: {os.path.join(os.getcwd(), 'usuarios.db')}")
@@ -143,10 +117,10 @@ def home():
 def login():
     if 'usuario' in session: return redirect('/dashboard')
     if request.method == 'POST':
-        email = request.form.get('email', '').strip() # Usar .get para robustez
-        senha = request.form.get('senha', '') # Usar .get para robustez
+        email = request.form.get('email', '').strip()
+        senha = request.form.get('senha', '')
         print(f"DEBUG: Tentativa de login para o email: {email}")
-        usuario_db = verificar_usuario(email, senha) # Renomeado para clareza
+        usuario_db = verificar_usuario(email, senha)
         if usuario_db:
             session['usuario'] = {'email': usuario_db[0], 'nome': usuario_db[1]} # Assumindo que verificar_usuario retorna (email, nome)
             flash('Login realizado com sucesso!', 'success')
@@ -176,15 +150,9 @@ def cadastro():
                 flash('Cadastro realizado com sucesso. Faça login.', 'success')
                 print(f"DEBUG: Usuário {email} cadastrado com sucesso. Redirecionando para login.")
                 return redirect('/login')
-<<<<<<< HEAD
             else: # Assumindo que cadastrar_usuario retorna False se email já existe ou outro erro de DB
                 flash('Este e-mail já está cadastrado ou ocorreu um erro no cadastro.', 'error')
                 print(f"DEBUG: Falha no cadastro: e-mail {email} já existe ou erro no DB.")
-=======
-            else:
-                flash('Este e-mail já está cadastrado.', 'error')
-                print(f"DEBUG: Falha no cadastro: e-mail {email} já existe.")
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
     return render_template('cadastro.html')
 
 @app.route('/logout')
@@ -201,20 +169,15 @@ def dashboard():
         print("DEBUG: Usuário não logado, redirecionando para login.")
         return redirect('/login')
 
-    usuario_session = session.get('usuario') # Renomeado para clareza
+    usuario_session = session.get('usuario')
     if not isinstance(usuario_session, dict) or 'email' not in usuario_session:
         session.pop('usuario', None)
         flash('Sessão inválida ou expirada. Faça login novamente.', 'error')
         print("DEBUG: Sessão inválida ou expirada, redirecionando para login.")
         return redirect('/login')
 
-<<<<<<< HEAD
     email = usuario_session.get('email', '')
     nome_usuario = usuario_session.get('nome', '')
-=======
-    email = usuario.get('email', '')
-    nome_usuario = usuario.get('nome', '')
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
     print(f"DEBUG: Acessando dashboard para o usuário: {email}")
 
     cripto_selecionada = request.args.get('cripto', 'bitcoin')
@@ -223,11 +186,10 @@ def dashboard():
     resultado_conversao = None
     # Para repopular o formulário do conversor
     converter_form_data = {
-        'valor_conversor': request.form.get('valor_conversor', ''),
+        'valor_conversor': request.form.get('valor_conversor', ''), # Inicializa com valor do post se houver
         'de': request.form.get('de', ''),
         'para': request.form.get('para', '')
     }
-
 
     if request.method == 'POST':
         print(f"DEBUG: Requisição POST recebida. Form data: {request.form}")
@@ -239,19 +201,10 @@ def dashboard():
             return redirect(url_for('dashboard', _anchor='grafico', cripto=cripto_selecionada, periodo=periodo_selecionado))
 
         elif 'investir' in request.form:
-<<<<<<< HEAD
-            # Seu código de investimento aqui (mantido como no original)
-            # ... (código de investimento original) ...
-            cripto_invest = request.form.get('cripto')
-            valor_str = request.form.get('valor')
-            print(f"DEBUG: Tentativa de investimento: cripto={cripto_invest}, valor_str={valor_str}")
-=======
-            cripto_invest = request.form.get('cripto', '') # Usar .get
-            valor_str = request.form.get('valor', '') # Usar .get
-
+            cripto_invest = request.form.get('cripto', '')
+            valor_str = request.form.get('valor', '')
             print(f"DEBUG: Tentativa de investimento: cripto={cripto_invest}, valor_str={valor_str}")
 
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
             if not valor_str:
                 flash("Por favor, insira um valor para investir.", "error")
                 return redirect(url_for('dashboard', _anchor='investir'))
@@ -263,16 +216,10 @@ def dashboard():
             except ValueError:
                 flash("Valor inválido para investimento. Use apenas números.", "error")
                 return redirect(url_for('dashboard', _anchor='investir'))
+            
             saldo_brl_atual = get_saldo(email, 'BRL')
             if saldo_brl_atual is None: saldo_brl_atual = 0.0
             print(f"DEBUG: Saldo BRL atual para investimento: {saldo_brl_atual:.2f}")
-<<<<<<< HEAD
-            if saldo_brl_atual < valor:
-                flash(f"Saldo BRL insuficiente (R$ {saldo_brl_atual:.2f}) para investir R$ {valor:.2f}.", "error")
-                return redirect(url_for('dashboard', _anchor='investir'))
-            preco_atual_invest = get_cached_data(f'price_{cripto_invest}_brl', get_crypto_price, cripto_invest, 'brl')
-            print(f"DEBUG: Preço atual de {cripto_invest}: {preco_atual_invest}")
-=======
 
             if saldo_brl_atual < valor:
                 flash(f"Saldo BRL insuficiente (R$ {saldo_brl_atual:.2f}) para investir R$ {valor:.2f}.", "error")
@@ -285,20 +232,11 @@ def dashboard():
             )
             print(f"DEBUG: Preço atual de {cripto_invest}: {preco_atual_invest}")
 
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
             if preco_atual_invest is None or preco_atual_invest == 0:
                 flash(f"Não foi possível obter a cotação atual de {cripto_invest.title()}. Tente novamente mais tarde.", "error")
                 return redirect(url_for('dashboard', _anchor='investir'))
+            
             quantidade_adquirida = valor / preco_atual_invest
-<<<<<<< HEAD
-            print(f"DEBUG: Atualizando saldo BRL (-{valor:.2f}) e {cripto_invest} (+{quantidade_adquirida:.6f}) para {email}.")
-            atualizar_saldo(email, 'BRL', -valor)
-            atualizar_saldo(email, cripto_invest, quantidade_adquirida)
-            print(f"DEBUG: Registrando transações para investimento de {valor:.2f} BRL em {cripto_invest}.")
-            registrar_transacao(email, 'investimento_compra', 'BRL', valor)
-            registrar_transacao(email, 'compra_cripto', cripto_invest, quantidade_adquirida)
-=======
-
             print(f"DEBUG: Atualizando saldo BRL (-{valor:.2f}) e {cripto_invest} (+{quantidade_adquirida:.6f}) para {email}.")
             atualizar_saldo(email, 'BRL', -valor)
             atualizar_saldo(email, cripto_invest, quantidade_adquirida)
@@ -307,58 +245,32 @@ def dashboard():
             registrar_transacao(email, 'investimento_compra', 'BRL', valor)
             registrar_transacao(email, 'compra_cripto', cripto_invest, quantidade_adquirida)
 
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
             print(f"DEBUG: Salvando investimento: {cripto_invest}, {valor:.2f} BRL, preço {preco_atual_invest:.2f}.")
             salvar_investimento(email, cripto_invest, valor, preco_atual_invest)
             flash(f"Investimento de R$ {valor:.2f} em {cripto_invest.title()} realizado. Você adquiriu {app.jinja_env.filters['format_number'](quantidade_adquirida)} unidades.", "success")
             return redirect(url_for('dashboard', _anchor='investir'))
-
 
         elif 'converter' in request.form:
             from_moeda = request.form.get('de', '').lower().strip()
             to_moeda = request.form.get('para', '').lower().strip()
             valor_conversor_str = request.form.get('valor_conversor', '')
 
-<<<<<<< HEAD
-            # Atualiza os valores do formulário para repopulação
+            # Atualiza os valores do formulário para repopulação em caso de erro ou para exibição
             converter_form_data['de'] = from_moeda
             converter_form_data['para'] = to_moeda
             converter_form_data['valor_conversor'] = valor_conversor_str
-=======
-            print(f"DEBUG: Tentativa de conversão: {valor_conversor_str} de {from_moeda} para {to_moeda}.")
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
-
+            
             print(f"DEBUG: Tentativa de conversão: {valor_conversor_str} de {from_moeda} para {to_moeda}.")
 
-<<<<<<< HEAD
-            if not valor_conversor_str or not from_moeda or not to_moeda: # Adicionado checagem para from_moeda e to_moeda
+            if not valor_conversor_str or not from_moeda or not to_moeda:
                 flash('Por favor, preencha todos os campos do conversor.', 'error')
-                # Não redireciona aqui para que o erro seja mostrado na mesma página
-                # e os dados do formulário sejam mantidos através de converter_form_data.
-                # Se preferir o comportamento de redirect original, descomente a linha abaixo:
-                # return redirect(url_for('dashboard', _anchor='conversor'))
-=======
-            rate = get_cached_data(
-                f'conversion_rate_{from_moeda}_to_{to_moeda}',
-                converter_crypto,
-                from_moeda,
-                to_moeda
-            )
-            print(f"DEBUG: Taxa de conversão de {from_moeda} para {to_moeda}: {rate}")
-
-            if rate is not None and rate > 0:
-                converted_amount = valor_conversor * rate
-                resultado_conversao = f"{valor_conversor:.6f} {from_moeda.upper()} = {converted_amount:.6f} {to_moeda.upper()}"
-                flash(f"Conversão: {resultado_conversao}", "success")
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
+                # Não redireciona, para manter os dados do formulário e exibir o erro na mesma página
             else:
                 try:
-                    valor_conversor = float(valor_conversor_str)
-                    if valor_conversor <= 0:
+                    valor_conversor_num = float(valor_conversor_str) # Renomeado para evitar conflito com var externa
+                    if valor_conversor_num <= 0:
                         flash('O valor para conversão deve ser positivo.', 'error')
-                        # return redirect(url_for('dashboard', _anchor='conversor')) # Idem acima
                     else:
-                        # Procede para a tentativa de conversão se a validação básica passou
                         rate = get_cached_data(
                             f'conversion_rate_{from_moeda}_to_{to_moeda}',
                             converter_crypto,
@@ -368,9 +280,9 @@ def dashboard():
                         print(f"DEBUG: Taxa de conversão de {from_moeda} para {to_moeda}: {rate}")
 
                         if rate is not None and rate > 0:
-                            converted_amount = valor_conversor * rate
+                            converted_amount = valor_conversor_num * rate
                             
-                            val_orig_formatted = app.jinja_env.filters['format_number'](valor_conversor)
+                            val_orig_formatted = app.jinja_env.filters['format_number'](valor_conversor_num)
                             if to_moeda.upper() == 'BRL':
                                 converted_amt_formatted = app.jinja_env.filters['format_brl'](converted_amount)
                                 resultado_conversao = f"{val_orig_formatted} {from_moeda.upper()} = R$ {converted_amt_formatted}"
@@ -380,62 +292,50 @@ def dashboard():
                             
                             flash(f"Conversão: {resultado_conversao}", "success")
                         else:
-                            resultado_conversao = None
+                            resultado_conversao = None # Garante que não haja resultado antigo
                             # Se get_cached_data/converter_crypto não flashou erro específico da API, flash um genérico
-                            has_error_flash = any(m[0] == 'error' for m in get_flashed_messages(with_categories=True, category_filter=['error']))
-                            if not has_error_flash: # Evita duplicar mensagens de erro
+                            # Verifica se já existe uma mensagem de erro para não duplicar
+                            has_error_flash = any(m[1] == 'error' for m in get_flashed_messages(with_categories=True, category_filter=['error']))
+                            if not has_error_flash:
                                 flash(f'Não foi possível obter a taxa de conversão de {from_moeda.upper()} para {to_moeda.upper()}. Verifique as moedas ou tente mais tarde.', 'error')
-                        
-                        # ***** REMOVIDO O REDIRECT DAQUI *****
-                        # Agora, a execução continuará para o render_template no final da função,
-                        # permitindo que 'resultado_conversao' e 'converter_form_data' sejam usados.
-
                 except ValueError:
                     flash('Valor inválido para conversão. Por favor, insira um número.', 'error')
-                    # return redirect(url_for('dashboard', _anchor='conversor')) # Idem acima
+            # A renderização ocorrerá no final da função dashboard, passando resultado_conversao e converter_form_data
 
         elif 'operacao' in request.form:
-            # Seu código de operação de carteira aqui (mantido como no original)
-            # ... (código de operação original) ...
             try:
                 valor_operacao_str = request.form.get('valor', '')
                 moeda_operacao = request.form.get('moeda', 'BRL').upper()
-<<<<<<< HEAD
-                tipo_operacao = request.form.get('operacao')
-                print(f"DEBUG: Tentativa de operação: tipo={tipo_operacao}, moeda={moeda_operacao}, valor_str={valor_operacao_str}")
-=======
                 tipo_operacao = request.form.get('operacao', '')
-
                 print(f"DEBUG: Tentativa de operação: tipo={tipo_operacao}, moeda={moeda_operacao}, valor_str={valor_operacao_str}")
 
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
                 if not valor_operacao_str:
                     flash("Por favor, insira um valor para a operação.", "error")
                     return redirect(url_for('dashboard', _anchor='carteira'))
+                
                 valor_operacao = float(valor_operacao_str)
                 if valor_operacao <= 0:
                     flash("O valor da operação deve ser positivo.", "error")
                     return redirect(url_for('dashboard', _anchor='carteira'))
+
                 if tipo_operacao == 'deposito':
                     print(f"DEBUG: Realizando depósito de {valor_operacao:.2f} {moeda_operacao} para {email}.")
                     atualizar_saldo(email, moeda_operacao, valor_operacao)
                     registrar_transacao(email, 'deposito', moeda_operacao, valor_operacao)
-                    flash(f"Depósito de R$ {app.jinja_env.filters['format_brl'](valor_operacao)} realizado com sucesso!", "success")
+                    flash(f"Depósito de R$ {app.jinja_env.filters['format_brl'](valor_operacao) if moeda_operacao == 'BRL' else app.jinja_env.filters['format_number'](valor_operacao) + ' ' + moeda_operacao} realizado com sucesso!", "success")
                 elif tipo_operacao == 'saque':
                     saldo_atual_moeda = get_saldo(email, moeda_operacao)
                     if saldo_atual_moeda is None: saldo_atual_moeda = 0.0
                     print(f"DEBUG: Saldo atual de {moeda_operacao} para saque: {saldo_atual_moeda:.2f}.")
-<<<<<<< HEAD
-=======
-
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
+                    
                     if saldo_atual_moeda >= valor_operacao:
                         print(f"DEBUG: Realizando saque de {valor_operacao:.2f} {moeda_operacao} para {email}.")
                         atualizar_saldo(email, moeda_operacao, -valor_operacao)
                         registrar_transacao(email, 'saque', moeda_operacao, valor_operacao)
-                        flash(f"Saque de R$ {app.jinja_env.filters['format_brl'](valor_operacao)} realizado com sucesso!", "success")
+                        flash(f"Saque de R$ {app.jinja_env.filters['format_brl'](valor_operacao) if moeda_operacao == 'BRL' else app.jinja_env.filters['format_number'](valor_operacao) + ' ' + moeda_operacao} realizado com sucesso!", "success")
                     else:
-                        flash(f"Saldo {moeda_operacao} insuficiente (R$ {app.jinja_env.filters['format_brl'](saldo_atual_moeda)}) para realizar o saque de R$ {app.jinja_env.filters['format_brl'](valor_operacao)}.", "error")
+                        format_func = app.jinja_env.filters['format_brl'] if moeda_operacao == 'BRL' else app.jinja_env.filters['format_number']
+                        flash(f"Saldo {moeda_operacao} insuficiente ({format_func(saldo_atual_moeda)}) para realizar o saque de {format_func(valor_operacao)}.", "error")
                 else:
                     flash("Tipo de operação inválido.", "error")
             except ValueError:
@@ -443,47 +343,38 @@ def dashboard():
             except Exception as e:
                 flash(f"Erro na operação: {str(e)}", "error")
                 print(f"ERRO CRÍTICO na operação da carteira: {e}")
-<<<<<<< HEAD
             return redirect(url_for('dashboard', _anchor='carteira'))
 
     # Lógica GET e dados para o template (comum a GET e POST que não redirecionou)
     saldo_brl_display = get_saldo(email, 'BRL')
     if saldo_brl_display is None: saldo_brl_display = 0.0
-=======
-
-            return redirect(url_for('dashboard', _anchor='carteira'))
-
-    saldo_brl_display = get_saldo(email, 'BRL')
-    if saldo_brl_display is None:
-        saldo_brl_display = 0.0
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
     print(f"DEBUG: Saldo BRL para exibição: {saldo_brl_display:.2f}")
 
-    criptos_para_cotacao = ['bitcoin', 'ethereum', 'litecoin', 'dogecoin', 'cardano']
+    criptos_para_cotacao = ['bitcoin', 'ethereum', 'litecoin', 'dogecoin', 'cardano'] # Adicione outras conforme necessário
     precos_atuais_cached = get_all_crypto_prices_cached(criptos_para_cotacao, 'brl')
     print(f"DEBUG: Preços atuais cacheados: {precos_atuais_cached}")
 
     precos_para_template = precos_atuais_cached.copy()
-    precos_para_template['BRL'] = 1.0
+    precos_para_template['BRL'] = 1.0 # Para consistência no conversor e exibição
 
-    investimentos_raw = listar_investimentos(email) or [] # Garante que seja uma lista vazia se None
+    investimentos_raw = listar_investimentos(email) or []
     investimentos = []
-    for inv_dict in investimentos_raw: # Renomeado para evitar conflito com módulo 'inv'
-        inv_copy = inv_dict.copy()
+    for inv_dict_raw in investimentos_raw:
+        inv_copy = inv_dict_raw.copy()
         inv_copy['data'] = format_date_from_db(inv_copy.get('data'))
         investimentos.append(inv_copy)
     print(f"DEBUG: Investimentos carregados: {investimentos}")
 
     ganhos = []
-    for inv_dict in investimentos: # Renomeado para evitar conflito
-        cripto_nome = inv_dict.get('cripto')
-        valor_investido_original = inv_dict.get('valor', 0.0)
-        preco_compra_original = inv_dict.get('preco', 0.0)
-        # Correção: Acessar precos_atuais_cached com a chave em minúsculas
-        if cripto_nome and cripto_nome.lower() in precos_atuais_cached and precos_atuais_cached[cripto_nome.lower()] is not None and preco_compra_original > 0:
+    for inv_dict_item in investimentos:
+        cripto_nome = inv_dict_item.get('cripto')
+        valor_investido_original = inv_dict_item.get('valor', 0.0)
+        preco_compra_original = inv_dict_item.get('preco', 0.0)
+        
+        if cripto_nome and cripto_nome.lower() in precos_atuais_cached and \
+           precos_atuais_cached[cripto_nome.lower()] is not None and preco_compra_original > 0:
             preco_atual_da_cripto = precos_atuais_cached[cripto_nome.lower()]
             quantidade_adquirida = valor_investido_original / preco_compra_original
-<<<<<<< HEAD
             ganho_calculado = (preco_atual_da_cripto - preco_compra_original) * quantidade_adquirida
             ganhos.append({'cripto': cripto_nome.title(), 'ganho': ganho_calculado})
         else:
@@ -491,132 +382,73 @@ def dashboard():
     print(f"DEBUG: Ganhos calculados: {ganhos}")
 
     saldo_total_simulado = saldo_brl_display
-    carteira_completa_para_calculo = get_carteira_completa(email)
+    carteira_completa_para_calculo = get_carteira_completa(email) or {}
     print(f"DEBUG: Carteira completa para cálculo do saldo total: {carteira_completa_para_calculo}")
     for moeda_id, quantidade in carteira_completa_para_calculo.items():
         if moeda_id.upper() == 'BRL': continue
-        crypto_id_lower = moeda_id.lower()
-        preco_atual_cripto = precos_atuais_cached.get(crypto_id_lower) # .get() é mais seguro
-=======
-
-            ganho_calculado = (preco_atual_da_cripto - preco_compra_original) * quantidade_adquirida
-            ganhos.append({'cripto': cripto_nome.title(), 'ganho': ganho_calculado})
-        else:
-            ganhos.append({'cripto': cripto_nome.title(), 'ganho': 0.0, 'status': 'Preço indisponível ou compra inválida'})
-    print(f"DEBUG: Ganhos calculados: {ganhos}")
-
-    saldo_total_simulado = saldo_brl_display # Inicia com o saldo BRL
-    carteira_completa_para_calculo = get_carteira_completa(email) or {} # Garante que seja um dict vazio se None
-    print(f"DEBUG: Carteira completa para cálculo do saldo total: {carteira_completa_para_calculo}")
-    for moeda_id, quantidade in carteira_completa_para_calculo.items():
-        if moeda_id.upper() == 'BRL':
-            continue
-
+        
         crypto_id_lower = moeda_id.lower()
         preco_atual_cripto = precos_atuais_cached.get(crypto_id_lower)
-
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
         if preco_atual_cripto is not None:
             saldo_total_simulado += quantidade * preco_atual_cripto
         else:
             print(f"AVISO: Preço atual de {moeda_id} indisponível para cálculo do saldo total simulado.")
     print(f"DEBUG: Saldo total simulado final: {saldo_total_simulado:.2f}")
 
-<<<<<<< HEAD
-=======
-    print(f"DEBUG: Saldo total simulado final: {saldo_total_simulado:.2f}")
-
-
-    # Modificação para capturar o erro da API do CoinGecko para o histórico do gráfico
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
     labels_grafico, dados_grafico = [], []
     try:
         cached_history = get_cached_data(
             f'history_{cripto_selecionada}_{periodo_selecionado}_brl',
             obter_historico_coingecko,
             cripto_id=cripto_selecionada,
-            days=int(periodo_selecionado) # Adicionado vs_currency='brl' se for padrão da sua função
+            days=int(periodo_selecionado),
+            vs_currency='brl' # Adicionado explicitamente
         )
         if cached_history:
             labels_grafico, dados_grafico = cached_history
         else:
             print("DEBUG: Não foi possível obter dados para o gráfico. Verifique as flash messages.")
-<<<<<<< HEAD
-=======
-            flash("Não foi possível carregar os dados do gráfico para a criptomoeda selecionada. Isso pode ocorrer devido a um erro de API ou limite de requisições.", "warning")
-
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
+            # A função get_cached_data já pode ter emitido um flash. Adicionar um se não houver.
+            if not any(m[1] == 'error' or m[1] == 'warning' for m in get_flashed_messages(with_categories=True)):
+                 flash("Não foi possível carregar os dados do gráfico para a criptomoeda selecionada. Isso pode ocorrer devido a um erro de API ou limite de requisições.", "warning")
     except Exception as e:
         flash(f"Ocorreu um erro ao carregar o histórico do gráfico: {str(e)}", "error")
         print(f"[Erro] Erro ao carregar histórico do gráfico: {e}")
 
-<<<<<<< HEAD
     historico_transacoes_raw = get_historico_transacoes(email) or []
     historico_transacoes_processado = []
-=======
-    historico_transacoes_raw = get_historico_transacoes(email) or [] # Garante que seja uma lista vazia se None
-    historico_transacoes_processado = [] # Renomeada para evitar confusão
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
     for trans in historico_transacoes_raw:
         trans_copy = trans.copy()
         trans_copy['data'] = format_date_from_db(trans_copy.get('data'))
         historico_transacoes_processado.append(trans_copy)
     print(f"DEBUG: Histórico de transações processado para exibição: {historico_transacoes_processado}")
-<<<<<<< HEAD
 
-    carteira_completa_display = get_carteira_completa(email)
-=======
-
-
-    carteira_completa_display = get_carteira_completa(email) or {} # Garante que seja um dict vazio se None
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
+    carteira_completa_display = get_carteira_completa(email) or {}
     print(f"DEBUG: Carteira completa para exibição: {carteira_completa_display}")
 
     agora = datetime.now()
 
     return render_template('dashboard.html',
-<<<<<<< HEAD
-                           precos=precos_para_template,
-                           cripto=cripto_selecionada,
-                           saldo_brl=saldo_brl_display,
-                           saldo_total_simulado=saldo_total_simulado,
-                           nome_usuario=nome_usuario,
-                           investimentos=investimentos,
-                           resultado=resultado_conversao, # Passando para o template
-                           ganhos=ganhos,
-                           labels=labels_grafico,
-                           dados=dados_grafico,
-                           periodo=periodo_selecionado,
-                           data_atual=agora.strftime('%d/%m/%Y'), # Renomeado de 'data' para evitar conflito com tipo date
-                           hora_atual=agora.strftime('%H:%M:%S'), # Renomeado de 'hora'
-                           carteira=carteira_completa_display,
-                           isinstance=isinstance, # Passar builtins é geralmente ok, mas tenha ciência
-                           datetime=datetime,     # Idem
-                           date=date,             # Idem
-                           historico_transacoes_app=historico_transacoes_processado,
-                           converter_form_data=converter_form_data # Para repopular o form
-                           )
-=======
-        saldo_brl=saldo_brl_display,
-        saldo_total_simulado=saldo_total_simulado,
-        nome_usuario=nome_usuario,
-        precos=precos_para_template,
-        investimentos=investimentos,
-        resultado=resultado_conversao,
-        ganhos=ganhos,
-        cripto=cripto_selecionada,
-        labels=labels_grafico,
-        dados=dados_grafico,
-        periodo=periodo_selecionado,
-        data=agora.strftime('%d/%m/%Y'),
-        hora=agora.strftime('%H:%M:%S'),
-        carteira=carteira_completa_display,
-        isinstance=isinstance,
-        datetime=datetime,
-        date=date,
-        historico_transacoes_app=historico_transacoes_processado
-    )
->>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
+                            precos=precos_para_template,
+                            cripto=cripto_selecionada,
+                            saldo_brl=saldo_brl_display,
+                            saldo_total_simulado=saldo_total_simulado,
+                            nome_usuario=nome_usuario,
+                            investimentos=investimentos,
+                            resultado=resultado_conversao,
+                            ganhos=ganhos,
+                            labels=labels_grafico,
+                            dados=dados_grafico,
+                            periodo=periodo_selecionado,
+                            data_atual=agora.strftime('%d/%m/%Y'),
+                            hora_atual=agora.strftime('%H:%M:%S'),
+                            carteira=carteira_completa_display,
+                            isinstance=isinstance, 
+                            datetime=datetime,   
+                            date=date,          
+                            historico_transacoes_app=historico_transacoes_processado,
+                            converter_form_data=converter_form_data
+                            )
 
 @app.route('/faq')
 def faq():
