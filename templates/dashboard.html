@@ -266,9 +266,9 @@
             <select name="cripto" id="cripto" onchange="this.form.submit()">
               {% for crypto_id, price in precos.items() %} {% if
               crypto_id.lower() not in ['brl', 'usd', 'eur'] %}
-              <option value="{{ crypto_id }}" {% if cripto == crypto_id %}selected{% endif %}> 
-                                    {{ crypto_id.replace('_', ' ')|title }}
-                                </option>
+              <option value="{{ crypto_id }}" {% if cripto == crypto_id %}selected{% endif %}>              
+                {{ crypto_id.replace('_', ' ')|title }}
+              </option>
               {% endif %} {% endfor %}
             </select>
 
@@ -277,10 +277,10 @@
               <option value="7" {% if periodo == "7" %}selected{% endif %}>
                 7 dias
               </option>
-              <option value="7" {% if periodo == "15" %}selected{% endif %}>
+              <option value="15" {% if periodo == "15" %}selected{% endif %}>
                 15 dias
               </option>
-              <option value="7" {% if periodo == "30" %}selected{% endif %}>
+              <option value="30" {% if periodo == "30" %}selected{% endif %}>
                 30 dias
               </option>
             </select>
@@ -295,14 +295,14 @@
           <span
             ><i class="fas fa-arrow-up"></i> Máximo:
             <strong id="max-value"
-              >R$ {{ '%.2f'|format(dados|max or 0) }}</strong
-            ></span
+              >R$ {{ ('%.2f'|format(dados|max if dados else 0)) }}</strong 
+              >></span
           >
           <span
             ><i class="fas fa-arrow-down"></i> Mínimo:
             <strong id="min-value"
-              >R$ {{ '%.2f'|format(dados|min or 0) }}</strong
-            ></span
+              >R$ {{ ('%.2f'|format(dados|min if dados else 0)) }}</strong
+              >></span
           >
           <button onclick="exportChart()" class="btn-export">
             <i class="fas fa-download"></i> Exportar Gráfico
@@ -327,7 +327,7 @@
             required
             placeholder="Ex: 1.0"
             autocomplete="off"
-            value="{{ converter_form_data.get('valor_conversor', '') }}" /> {# Melhor usar converter_form_data #}
+            value="{{ converter_form_data.get('valor_conversor', '') }}" />
 
         <label for="de">De:</label>
         <input
@@ -337,7 +337,7 @@
             required
             placeholder="Ex: BTC"
             autocomplete="off"
-            value="{{ converter_form_data.get('de', '') }}" /> {# Melhor usar converter_form_data #}
+            value="{{ converter_form_data.get('de', '') }}" />
 
         <label for="para">Para:</label>
         <input
@@ -358,7 +358,7 @@
         </div>
         {% endif %}
 
-      
+        
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="alert-container" style="margin-top: 15px">
@@ -488,7 +488,28 @@
         const hamburger = document.querySelector('.hamburger');
         const sidebar = document.getElementById('sidebar');
         const body = document.body;
+        const navLinks = document.querySelectorAll('#sidebar ul li a'); // Seleciona os links da navegação
 
+        // Função para mostrar/esconder seções (ADAPTE OU SUBSTITUA SE NECESSÁRIO)
+        // Esta é uma implementação genérica. Se suas seções já são todas visíveis
+        // ou se você tem uma função específica para mostrar/esconder, ajuste aqui.
+        // Por enquanto, este exemplo assume que as seções estão todas no DOM
+        // e a rolagem para elas já as torna "ativas" visualmente.
+        function showSection(targetId) {
+          // Se você esconde seções com display:none, aqui seria o lugar para torná-las visíveis.
+          // Exemplo:
+          // document.querySelectorAll('main > section').forEach(section => {
+          //   section.style.display = 'none';
+          // });
+          // const sectionToShow = document.getElementById(targetId);
+          // if (sectionToShow) {
+          //   sectionToShow.style.display = 'block'; // ou 'flex', etc.
+          // }
+          console.log("Tentando mostrar e rolar para:", targetId); // Para depuração
+        }
+
+
+        // Lógica do Hamburger e Sidebar (seu código original)
         if (hamburger && sidebar) {
           hamburger.addEventListener('click', () => {
             const expanded = hamburger.getAttribute('aria-expanded') === 'true';
@@ -497,15 +518,9 @@
             body.classList.toggle('sidebar-open');
           });
 
-          sidebar.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', (event) => {
-              if (link.getAttribute('href').startsWith('#') && window.innerWidth <= 768 && sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                hamburger.setAttribute('aria-expanded', 'false');
-                body.classList.remove('sidebar-open');
-              }
-            });
-          });
+          // Seu código original para fechar a sidebar ao clicar em um link em telas pequenas:
+          // Removi o loop 'sidebar.querySelectorAll('a').forEach(link => {' daqui
+          // pois vamos tratar os links no loop 'navLinks.forEach' abaixo.
 
           body.addEventListener('click', (event) => {
             if (body.classList.contains('sidebar-open') && sidebar.classList.contains('active') &&
@@ -520,6 +535,78 @@
           if (!sidebar) console.warn("AVISO: Elemento '#sidebar' não encontrado.");
         }
 
+        // NOVA LÓGICA PARA ROLAGEM CENTRALIZADA E MANIPULAÇÃO DOS LINKS DA SIDEBAR
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(event) {
+            const href = this.getAttribute('href');
+
+            // Fecha a sidebar em telas menores (seu código original, adaptado)
+            if (href.startsWith('#') && window.innerWidth <= 768 && sidebar && sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                if(hamburger) hamburger.setAttribute('aria-expanded', 'false');
+                body.classList.remove('sidebar-open');
+            }
+
+            if (href && href.startsWith('#')) {
+              event.preventDefault(); 
+              const targetId = href.substring(1);
+              const targetSection = document.getElementById(targetId);
+
+              if (targetSection) {
+                // Chame sua função para mostrar a seção se ela estiver escondida
+                showSection(targetId); // Adapte se necessário
+
+                targetSection.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'center'
+                });
+                
+                // Atualiza a URL com o hash sem causar um novo "salto"
+                // Isso é útil para que o usuário possa copiar/compartilhar o link direto para a seção
+                if (history.pushState) {
+                    history.pushState(null, null, href);
+                } else {
+                    window.location.hash = href;
+                }
+
+
+                // Opcional: Adicionar classe 'active' ao link (adapte 'active-sidebar-link' ao seu CSS)
+                navLinks.forEach(navLink => navLink.classList.remove('active-sidebar-link'));
+                this.classList.add('active-sidebar-link');
+
+              } else {
+                console.warn('Seção alvo não encontrada para rolagem:', targetId);
+              }
+            }
+            // Links que não são âncoras (ex: /faq) seguirão seu comportamento padrão
+          });
+        });
+
+        // Lógica para rolagem ao carregar a página com hash na URL
+        if (window.location.hash && window.location.hash.startsWith('#')) {
+          const targetIdOnLoad = window.location.hash.substring(1);
+          const targetSectionOnLoad = document.getElementById(targetIdOnLoad);
+          if (targetSectionOnLoad) {
+            showSection(targetIdOnLoad); // Adapte se necessário
+            
+            // Adiciona um pequeno delay para garantir que tudo está renderizado
+            setTimeout(() => {
+              targetSectionOnLoad.scrollIntoView({
+                behavior: 'auto', // 'smooth' pode ser estranho no carregamento inicial
+                block: 'center'
+              });
+              // Marcar o link correspondente como ativo
+              const activeLinkOnLoad = document.querySelector(`#sidebar ul li a[href="${window.location.hash}"]`);
+              if (activeLinkOnLoad) {
+                navLinks.forEach(navLink => navLink.classList.remove('active-sidebar-link'));
+                activeLinkOnLoad.classList.add('active-sidebar-link');
+              }
+            }, 100); 
+          }
+        }
+
+
+        // Lógica do select de operação da carteira (seu código original)
         const operacaoSelect = document.getElementById('operacao');
         if (operacaoSelect) {
           operacaoSelect.addEventListener('change', function() {
@@ -532,6 +619,7 @@
           });
         }
 
+        // Lógica do Gráfico (seu código original)
         const canvasElement = document.getElementById('grafico-canvas');
         const criptoSelectForChart = document.getElementById('cripto');
 
@@ -597,6 +685,7 @@
           if (!criptoSelectForChart && canvasElement) console.warn("AVISO: Elemento select '#cripto' não encontrado para o gráfico.");
         }
 
+        // Lógica do botão de toggle da carteira (seu código original)
         const btnToggleCarteira = document.getElementById("btn-toggle-carteira");
         const carteiraDetalhesDiv = document.getElementById("carteira-detalhes");
 
@@ -610,6 +699,7 @@
           });
         }
 
+        // Lógica do modal de alertas (seu código original)
         const alertModal = document.getElementById('alertModal');
         const alertsContainerInModal = alertModal ? alertModal.querySelector('.alert-container') : null;
 
@@ -631,13 +721,13 @@
               }
 
               setTimeout(() => {
-                if (alert.parentElement) {
+                if (alert.parentElement) { // Verifica se o alerta ainda existe no DOM
                     alert.remove();
                 }
                 if (alertsContainerInModal.querySelectorAll('.alert').length === 0) {
                   alertModal.style.display = 'none';
                 }
-              }, 5000);
+              }, 5000); 
             });
 
             alertModal.addEventListener('click', (event) => {

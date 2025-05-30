@@ -54,7 +54,7 @@ print(f"DEBUG: Caminho esperado do banco de dados: {os.path.join(os.getcwd(), 'u
 init_db()
 
 cache_data = {}
-CACHE_DURATION_SECONDS = 1800
+CACHE_DURATION_SECONDS = 21600 # 6 horas
 
 def get_cached_data(key, fetch_function, *args, **kwargs):
     if key in cache_data and datetime.now() < cache_data[key]['expiry']:
@@ -401,8 +401,7 @@ def dashboard():
             f'history_{cripto_selecionada}_{periodo_selecionado}_brl',
             obter_historico_coingecko,
             cripto_id=cripto_selecionada,
-            days=int(periodo_selecionado),
-            vs_currency='brl' # Adicionado explicitamente
+            days=int(periodo_selecionado)
         )
         if cached_history:
             labels_grafico, dados_grafico = cached_history
