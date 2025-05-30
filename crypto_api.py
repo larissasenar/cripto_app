@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
 from typing import Optional, List, Tuple, Dict
+import jinja2
 
 # Mapeamento de IDs comuns para os IDs da CoinGecko
 # Ex: 'btc' -> 'bitcoin', 'brl' -> 'brazilian-real'
