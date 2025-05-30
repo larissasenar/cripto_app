@@ -267,9 +267,17 @@
               {% for crypto_id, price in precos.items() %} {% if
               crypto_id.lower() not in ['brl', 'usd', 'eur'] %}
               <option
+<<<<<<< HEAD
                 value="{{ crypto_id }}"
                 {% if cripto == crypto_id %}selected{% endif %}
               >
+=======
+    value="{{ crypto_id }}"
+    {% if cripto == crypto_id %}selected{% endif %}
+>
+    {{ crypto_id.replace('_', ' ')|title }}
+</option>
+>>>>>>> e865a639608c706d30e8fbe89ebac3465e54ed22
                 {{ crypto_id.replace('_', ' ')|title }}
               </option>
               {% endif %} {% endfor %}
